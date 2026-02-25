@@ -10,11 +10,14 @@
   ],
   "scripts": {
     "dev:backend": "turbo run dev -F backend",
+    "build:backend": "turbo run build -F backend",
     "build:client": "turbo run build -F client",
     "start:backend": "turbo run start -F backend",
     "lint": "turbo run lint",
+    "lint:backend": "turbo run lint -F backend",
     "lint:client": "turbo run lint -F client",
     "check-types": "turbo run check-types",
+    "check-types:backend": "turbo run check-types -F backend",
     "check-types:client": "turbo run check-types -F client"
   },
   "keywords": [
