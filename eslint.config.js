@@ -25,7 +25,7 @@ export default defineConfig([
 
   // Stylistic and Basic Rules
   {
-    files: ['**/*.{js,ts,vue}'],
+    files: ['**/*.{js,ts}'],
     plugins: {
       '@stylistic': stylistic
     },
