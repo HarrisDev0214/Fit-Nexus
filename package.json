@@ -1,0 +1,26 @@
+{
+  "name": "fit-nexus",
+  "version": "0.0.0",
+  "description": "A fitness tracking application for recording workouts, tracking progress, and achieving health goals",
+  "type": "module",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "fitness",
+    "workout",
+    "health",
+    "tracking"
+  ],
+  "author": "Harris",
+  "license": "ISC",
+  "packageManager": "pnpm@10.19.0",
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
