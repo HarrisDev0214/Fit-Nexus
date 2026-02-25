@@ -9,7 +9,7 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "turbo run lint"
   },
   "keywords": [
     "fitness",
@@ -24,6 +24,13 @@
     "node": ">=22.0.0"
   },
   "devDependencies": {
-    "turbo": "2.8.10"
+    "@eslint/js": "10.0.1",
+    "@stylistic/eslint-plugin": "5.9.0",
+    "eslint": "10.0.2",
+    "eslint-plugin-turbo": "2.8.10",
+    "globals": "17.3.0",
+    "turbo": "2.8.10",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.56.1"
   }
 }
