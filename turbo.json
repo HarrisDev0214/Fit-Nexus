@@ -1,5 +1,6 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
+  "globalEnv": ["PORT", "HOST"],
   "tasks": {
     "build": {
       "outputs": ["dist/**"]
@@ -12,6 +13,9 @@
     },
     "dev": {
       "persistent": true,
+      "cache": false
+    },
+    "start": {
       "cache": false
     }
   }
