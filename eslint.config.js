@@ -5,6 +5,8 @@ import globals from 'globals';
 
 // Plugins
 import tseslint from 'typescript-eslint';
+import pluginVue from 'eslint-plugin-vue';
+import vueParser from 'vue-eslint-parser';
 import stylistic from '@stylistic/eslint-plugin';
 import turbo from 'eslint-plugin-turbo';
 
@@ -12,6 +14,7 @@ export default defineConfig([
   // Base Configs
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  ...pluginVue.configs['flat/recommended'],
 
   // Global Settings
   {
@@ -20,6 +23,21 @@ export default defineConfig([
         ...globals.browser,
         ...globals.node
       }
+    }
+  },
+
+  // Vue Parser
+  {
+    files: ['**/*.vue'],
+    languageOptions: {
+      parser: vueParser,
+      parserOptions: {
+        parser: tseslint.parser,
+        sourceType: 'module'
+      }
+    },
+    rules: {
+      'vue/max-attributes-per-line': 'off'
     }
   },
 
