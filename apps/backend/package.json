@@ -1,0 +1,31 @@
+{
+  "name": "backend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc",
+    "lint": "eslint .",
+    "check-types": "tsc --noEmit",
+    "db:generate": "read -p 'Migration name: ' name && drizzle-kit generate --name=$name",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "dotenv": "17.3.1",
+    "drizzle-orm": "0.45.1",
+    "express": "5.2.1",
+    "pg": "8.18.0"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*",
+    "@types/express": "5.0.0",
+    "@types/node": "24.10.1",
+    "@types/pg": "8.16.0",
+    "drizzle-kit": "0.31.9",
+    "tsx": "4.19.0",
+    "typescript": "5.9.3"
+  }
+}
