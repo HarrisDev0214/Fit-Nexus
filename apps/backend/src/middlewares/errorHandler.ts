@@ -23,8 +23,8 @@ export const jsonErrorHandler = (
       message: bodyParseError.message,
       url: req.url,
       method: req.method,
-      rawBody: err.body,
-      headers: req.headers
+      contentType: req.headers['content-type'],
+      contentLength: req.headers['content-length']
     });
 
     return res.status(400).json({
@@ -70,7 +70,9 @@ export const globalErrorHandler = (
     return res.status(500).json({
       status: 'error',
       code: 'INTERNAL_SERVER_ERROR',
-      message: err.message,
+      message: process.env.NODE_ENV === 'developlment'
+        ? err.message
+        : 'An unexpected error occurred',
       ...(process.env.NODE_ENV === 'development' && {
         stack: err.stack
       })

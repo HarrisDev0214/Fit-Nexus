@@ -12,15 +12,13 @@ export const validateInput = (schema: z.ZodType) => (
     next();
   } catch (err) {
     if (err instanceof z.ZodError) {
-      const errors = err.issues.map((issue) => {
-        return {
-          field: issue.path[1],
-          code: issue.code,
-          message: issue.message
-        };
-      });
+      const errors = err.issues.map((issue) => ({
+        field: issue.path.length > 1 ? issue.path.slice(1).join('.') : 'body',
+        code: issue.code,
+        message: issue.message
+      }));
 
-      throw new Validation422Error('Input validation failed', errors);
+      return next(new Validation422Error('Input validation failed', errors));
     }
 
     next(err);
