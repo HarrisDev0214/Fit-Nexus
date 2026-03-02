@@ -11,4 +11,12 @@ export const signupSchema = z.object({
   })
 });
 
+export const loginSchema = z.object({
+  body: z.object({
+    email: z.string().email('Email 格式不正確'),
+    password: z.string().min(1, '密碼不可為空').max(256, '密碼長度不可超過 256 個字元')
+  })
+});
+
 export type SignupInput = z.infer<typeof signupSchema>['body'];
+export type LoginInput = z.infer<typeof loginSchema>['body'];

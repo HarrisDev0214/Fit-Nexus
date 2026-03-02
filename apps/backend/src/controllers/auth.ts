@@ -17,6 +17,7 @@ const signUp = async (
     });
 
     res.status(201).json({
+      status: 'success',
       message: 'User signed up successfully',
       data: newUser
     });
@@ -25,6 +26,23 @@ const signUp = async (
   }
 };
 
+const login = async (
+  req: Request,
+  res: Response
+) => {
+  const { email, password } = req.body;
+  const { accessToken, refreshToken } = await authService.login({ email, password });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      accessToken,
+      refreshToken
+    }
+  });
+};
+
 export {
-  signUp
+  signUp,
+  login
 };

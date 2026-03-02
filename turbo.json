@@ -1,6 +1,15 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
-  "globalEnv": ["PORT", "HOST", "DATABASE_URL", "NODE_ENV"],
+  "globalEnv": [
+    "PORT", "HOST", 
+    "DATABASE_URL", 
+    "NODE_ENV",
+    "JWT_ACCESS_SECRET",
+    "JWT_REFRESH_SECRET",
+    "JWT_ISS",
+    "JWT_ACCESS_AUD",
+    "JWT_REFRESH_AUD"
+  ],
   "tasks": {
     "build": {
       "outputs": ["dist/**"]
