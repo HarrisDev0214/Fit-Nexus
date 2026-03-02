@@ -1,29 +1,22 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { Request, Response } from 'express';
 import { authService } from '@/services/auth';
 
 const signUp = async (
   req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) => {
   const { name, email, password, sex } = req.body;
+  const newUser = await authService.signUp({
+    name,
+    email,
+    password,
+    sex
+  });
 
-  try {
-    const newUser = await authService.signUp({
-      name,
-      email,
-      password,
-      sex
-    });
-
-    res.status(201).json({
-      status: 'success',
-      message: 'User signed up successfully',
-      data: newUser
-    });
-  } catch (err) {
-    next(err);
-  }
+  res.status(201).json({
+    status: 'success',
+    data: newUser
+  });
 };
 
 const login = async (
