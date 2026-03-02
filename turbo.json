@@ -1,6 +1,6 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
-  "globalEnv": ["PORT", "HOST", "DATABASE_URL"],
+  "globalEnv": ["PORT", "HOST", "DATABASE_URL", "NODE_ENV"],
   "tasks": {
     "build": {
       "outputs": ["dist/**"]
