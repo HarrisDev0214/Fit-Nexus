@@ -16,8 +16,8 @@ export class BadRequest400Error extends AppError {
 }
 
 export class Unauthorized401Error extends AppError {
-  constructor(message = 'Unauthorized') {
-    super(401, 'UNAUTHORIZED', message);
+  constructor(message = 'Unauthorized', code = 'UNAUTHORIZED') {
+    super(401, code, message);
   }
 }
 
