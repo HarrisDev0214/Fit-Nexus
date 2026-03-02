@@ -1,7 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import argon2 from 'argon2';
-import { db } from '@/db/db';
-import { users } from '@/db/schemas/users';
+import { authService } from '@/services/auth';
 
 const signUp = async (
   req: Request,
@@ -11,13 +9,12 @@ const signUp = async (
   const { name, email, password, sex } = req.body;
 
   try {
-    const passwordHash = await argon2.hash(password);
-    const [newUser] = await db.insert(users).values({
+    const newUser = await authService.signUp({
       name,
       email,
-      passwordHash,
+      password,
       sex
-    }).returning();
+    });
 
     res.status(201).json({
       message: 'User signed up successfully',
