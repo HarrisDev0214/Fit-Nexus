@@ -35,7 +35,22 @@ const login = async (
   });
 };
 
+const updatePassword = async (
+  req: Request,
+  res: Response
+) => {
+  const { oldPassword, newPassword } = req.body;
+  const { userId } = req.user!;
+
+  await authService.updatePassword({ userId, oldPassword, newPassword });
+
+  res.status(200).json({
+    status: 'success'
+  });
+};
+
 export {
   signUp,
-  login
+  login,
+  updatePassword
 };

@@ -1,8 +1,8 @@
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import { userRepository } from '@/repositories/user';
-import type { SignupInput, LoginInput } from '@/schemas/auth';
-import { Unauthorized401Error } from '@/utils/errors';
+import type { SignupInput, LoginInput, UpdatePasswordInput } from '@/schemas/auth';
+import { NotFound404Error, Unauthorized401Error } from '@/utils/errors';
 
 export const authService = {
   signUp: async (data: SignupInput) => {
@@ -55,6 +55,21 @@ export const authService = {
       accessToken,
       refreshToken
     };
+  },
+  updatePassword: async (data: UpdatePasswordInput & { userId : string }) => {
+    const user = await userRepository.findById(data.userId);
 
+    if (!user) {
+      throw new NotFound404Error('User not found');
+    }
+
+    const passwordCheck = await argon2.verify(user.passwordHash, data.oldPassword);
+
+    if (!passwordCheck) {
+      throw new Unauthorized401Error('Old password is incorrect');
+    }
+
+    const newPasswordHash = await argon2.hash(data.newPassword);
+    await userRepository.updatePassword(data.userId, newPasswordHash);
   }
 };
