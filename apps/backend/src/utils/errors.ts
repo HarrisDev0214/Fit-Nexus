@@ -38,8 +38,20 @@ export class Conflict409Error extends AppError {
     super(409, 'CONFLICT', message);
   }
 }
+
+type ValidationErrorDetail = {
+  field: PropertyKey | undefined;
+  code: string;
+  message: string;
+};
 export class Validation422Error extends AppError {
-  constructor(message = 'Validation Error') {
+  errors?: ValidationErrorDetail[];
+
+  constructor(
+    message = 'Validation Error',
+    errors?: ValidationErrorDetail[]
+  ) {
     super(422, 'VALIDATION_ERROR', message);
+    this.errors = errors;
   }
 }

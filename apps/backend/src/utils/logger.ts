@@ -1,5 +1,5 @@
 import pino from 'pino';
-import { AppError } from '@/utils/errors';
+import { AppError, Validation422Error } from '@/utils/errors';
 import { DatabaseError } from 'pg';
 import type { Request } from 'express';
 
@@ -20,11 +20,12 @@ export const errorLogger = (
     url: req.url,
     method: req.method
   };
-  if (err instanceof AppError) {
+  if (err instanceof Validation422Error) {
     logger.error({
-      type: 'AppError',
+      type: 'Validation422Error',
       code: err.code,
       message: err.message,
+      errors: err.errors,
       ...baseInfo,
       ...(isDev && { stack: err.stack })
     });
@@ -35,6 +36,17 @@ export const errorLogger = (
     logger.error({
       type: 'DatabaseError',
       code: err.code,
+      ...baseInfo,
+      ...(isDev && { stack: err.stack })
+    });
+    return;
+  }
+
+  if (err instanceof AppError) {
+    logger.error({
+      type: 'AppError',
+      code: err.code,
+      message: err.message,
       ...baseInfo,
       ...(isDev && { stack: err.stack })
     });

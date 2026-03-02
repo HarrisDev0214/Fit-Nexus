@@ -2,7 +2,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import { logger, errorLogger } from '@/utils/logger';
 import { DatabaseError } from 'pg';
-import { AppError } from '@/utils/errors';
+import { AppError, Validation422Error } from '@/utils/errors';
 
 type BodyParserError = SyntaxError & {
   status: number;
@@ -42,6 +42,16 @@ export const globalErrorHandler = (
   res: Response,
   _next: NextFunction
 ) => {
+  if (err instanceof Validation422Error) {
+    errorLogger(err, req);
+    return res.status(422).json({
+      status: 'error',
+      code: err.code,
+      message: err.message,
+      errors: err.errors
+    });
+  }
+
   if (err instanceof Error && err.cause instanceof DatabaseError) {
     return pgErrorHandler(err.cause, req, res);
   }
