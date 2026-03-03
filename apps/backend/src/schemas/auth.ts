@@ -11,4 +11,23 @@ export const signupSchema = z.object({
   })
 });
 
+export const loginSchema = z.object({
+  body: z.object({
+    email: z.string().email('Email 格式不正確'),
+    password: z.string().min(1, '密碼不可為空').max(256, '密碼長度不可超過 256 個字元')
+  })
+});
+
+export const updatePasswordSchema = z.object({
+  body: z.object({
+    oldPassword: z.string().min(1, '密碼不可為空').max(256, '密碼長度不可超過 256 個字元'),
+    newPassword: z.string().min(8, '密碼長度至少為 8 個字元').max(256, '密碼長度不可超過 256 個字元')
+  }).refine(data => data.oldPassword !== data.newPassword, {
+    message: '新密碼不能與舊密碼相同',
+    path: ['newPassword']
+  })
+});
+
 export type SignupInput = z.infer<typeof signupSchema>['body'];
+export type LoginInput = z.infer<typeof loginSchema>['body'];
+export type UpdatePasswordInput = z.infer<typeof updatePasswordSchema>['body'];

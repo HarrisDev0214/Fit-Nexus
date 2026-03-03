@@ -1,3 +1,4 @@
+import { eq } from 'drizzle-orm';
 import { db } from '@/db/db';
 import { users } from '@/db/schemas/users';
 import type { SignupInput } from '@/schemas/auth';
@@ -22,5 +23,27 @@ export const userRepository = {
     });
 
     return newUser;
+  },
+  findByEmail: async (email: string) => {
+    const [user] = await db
+      .select({ id: users.id, email: users.email, passwordHash: users.passwordHash })
+      .from(users)
+      .where(eq(users.email, email));
+
+    return user;
+  },
+  findById: async (id: string) => {
+    const [user] = await db
+      .select({ id: users.id, passwordHash: users.passwordHash })
+      .from(users)
+      .where(eq(users.id, id));
+
+    return user;
+  },
+  updatePassword: async (id: string, passwordHash: string): Promise<void> => {
+    await db
+      .update(users)
+      .set({ passwordHash })
+      .where(eq(users.id, id));
   }
 };

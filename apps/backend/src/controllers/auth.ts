@@ -1,30 +1,83 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { Request, Response } from 'express';
 import { authService } from '@/services/auth';
 
 const signUp = async (
   req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) => {
   const { name, email, password, sex } = req.body;
+  const newUser = await authService.signUp({
+    name,
+    email,
+    password,
+    sex
+  });
 
-  try {
-    const newUser = await authService.signUp({
-      name,
-      email,
-      password,
-      sex
-    });
+  res.status(201).json({
+    status: 'success',
+    data: newUser
+  });
+};
 
-    res.status(201).json({
-      message: 'User signed up successfully',
-      data: newUser
-    });
-  } catch (err) {
-    next(err);
-  }
+const login = async (
+  req: Request,
+  res: Response
+) => {
+  const { email, password } = req.body;
+  const { accessToken, refreshToken } = await authService.login({ email, password });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      accessToken,
+      refreshToken
+    }
+  });
+};
+
+const logout = async (
+  _req: Request,
+  res: Response
+) => {
+  res.status(200).json({
+    status: 'success'
+  });
+};
+
+const updatePassword = async (
+  req: Request,
+  res: Response
+) => {
+  const { oldPassword, newPassword } = req.body;
+  const { userId } = req.user!;
+
+  await authService.updatePassword({ userId, oldPassword, newPassword });
+
+  res.status(200).json({
+    status: 'success'
+  });
+};
+
+const refreshToken = async (
+  req: Request,
+  res: Response
+) => {
+  const { userId, email } = req.user!;
+
+  const accessToken = await authService.refreshToken({ userId, email });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      accessToken
+    }
+  });
 };
 
 export {
-  signUp
+  signUp,
+  login,
+  logout,
+  updatePassword,
+  refreshToken
 };
