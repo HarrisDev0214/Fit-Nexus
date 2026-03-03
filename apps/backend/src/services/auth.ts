@@ -1,7 +1,6 @@
 import argon2 from 'argon2';
-import jwt from 'jsonwebtoken';
 import { userRepository } from '@/repositories/user';
-import { jwtConfig } from '@/config/env';
+import { generateAccessToken, generateRefreshToken } from '@/utils/jwt';
 import type { SignupInput, LoginInput, UpdatePasswordInput } from '@/schemas/auth';
 import { NotFound404Error, Unauthorized401Error } from '@/utils/errors';
 
@@ -30,31 +29,11 @@ export const authService = {
       throw new Unauthorized401Error('Email or password is incorrect');
     }
 
-    const accessToken = jwt.sign(
-      { userId: user.id, email: user.email },
-      jwtConfig.accessSecret,
-      {
-        algorithm: 'HS256',
-        expiresIn: '10m',
-        issuer: jwtConfig.issuer,
-        audience: jwtConfig.accessAudience
-      }
-    );
-
-    const refreshToken = jwt.sign(
-      { userId: user.id, email: user.email },
-      jwtConfig.refreshSecret,
-      {
-        algorithm: 'HS256',
-        expiresIn: '7d',
-        issuer: jwtConfig.issuer,
-        audience: jwtConfig.refreshAudience
-      }
-    );
+    const payload = { userId: user.id, email: user.email };
 
     return {
-      accessToken,
-      refreshToken
+      accessToken: generateAccessToken(payload),
+      refreshToken: generateRefreshToken(payload)
     };
   },
   updatePassword: async (data: UpdatePasswordInput & { userId: string }) => {
@@ -80,17 +59,6 @@ export const authService = {
       throw new NotFound404Error('User not found');
     }
 
-    const accessToken = jwt.sign(
-      { userId: data.userId, email: data.email },
-      jwtConfig.accessSecret,
-      {
-        algorithm: 'HS256',
-        expiresIn: '10m',
-        issuer: jwtConfig.issuer,
-        audience: jwtConfig.accessAudience
-      }
-    );
-
-    return accessToken;
+    return generateAccessToken({ userId: data.userId, email: data.email });
   }
 };
