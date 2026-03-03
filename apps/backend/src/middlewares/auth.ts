@@ -1,11 +1,12 @@
 import jwt from 'jsonwebtoken';
 import { Unauthorized401Error } from '@/utils/errors';
+import { jwtConfig } from '@/config/env';
 import type { Response, Request, NextFunction } from 'express';
 
 const TOKEN_CONFIG = {
   access: {
-    secret: process.env.JWT_ACCESS_SECRET!,
-    audience: process.env.JWT_ACCESS_AUD,
+    secret: jwtConfig.accessSecret,
+    audience: jwtConfig.accessAudience,
     code: {
       missing: 'UNAUTHORIZED',
       expired: 'EXPIRED_ACCESS_TOKEN',
@@ -18,8 +19,8 @@ const TOKEN_CONFIG = {
     }
   },
   refresh: {
-    secret: process.env.JWT_REFRESH_SECRET!,
-    audience: process.env.JWT_REFRESH_AUD,
+    secret: jwtConfig.refreshSecret,
+    audience: jwtConfig.refreshAudience,
     code: {
       missing: 'UNAUTHORIZED',
       expired: 'EXPIRED_REFRESH_TOKEN',
@@ -54,7 +55,7 @@ export const validateJWT = (jwtType: 'access' | 'refresh') => {
     try {
       const decodedJWT = jwt.verify(token, TOKEN_CONFIG[jwtType].secret, {
         algorithms: ['HS256'],
-        issuer: process.env.JWT_ISS,
+        issuer: jwtConfig.issuer,
         audience: TOKEN_CONFIG[jwtType].audience
       }) as UserJwtPayload;
 

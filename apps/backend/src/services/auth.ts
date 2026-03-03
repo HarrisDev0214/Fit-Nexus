@@ -1,6 +1,7 @@
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import { userRepository } from '@/repositories/user';
+import { jwtConfig } from '@/config/env';
 import type { SignupInput, LoginInput, UpdatePasswordInput } from '@/schemas/auth';
 import { NotFound404Error, Unauthorized401Error } from '@/utils/errors';
 
@@ -31,23 +32,23 @@ export const authService = {
 
     const accessToken = jwt.sign(
       { userId: user.id, email: user.email },
-      process.env.JWT_ACCESS_SECRET!,
+      jwtConfig.accessSecret,
       {
         algorithm: 'HS256',
         expiresIn: '10m',
-        issuer: process.env.JWT_ISS,
-        audience: process.env.JWT_ACCESS_AUD
+        issuer: jwtConfig.issuer,
+        audience: jwtConfig.accessAudience
       }
     );
 
     const refreshToken = jwt.sign(
       { userId: user.id, email: user.email },
-      process.env.JWT_REFRESH_SECRET!,
+      jwtConfig.refreshSecret,
       {
         algorithm: 'HS256',
         expiresIn: '7d',
-        issuer: process.env.JWT_ISS,
-        audience: process.env.JWT_REFRESH_AUD
+        issuer: jwtConfig.issuer,
+        audience: jwtConfig.refreshAudience
       }
     );
 
@@ -81,12 +82,12 @@ export const authService = {
 
     const accessToken = jwt.sign(
       { userId: data.userId, email: data.email },
-      process.env.JWT_ACCESS_SECRET!,
+      jwtConfig.accessSecret,
       {
         algorithm: 'HS256',
         expiresIn: '10m',
-        issuer: process.env.JWT_ISS,
-        audience: process.env.JWT_ACCESS_AUD
+        issuer: jwtConfig.issuer,
+        audience: jwtConfig.accessAudience
       }
     );
 
