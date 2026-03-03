@@ -7,8 +7,8 @@
     "JWT_ACCESS_SECRET",
     "JWT_REFRESH_SECRET",
     "JWT_ISS",
-    "JWT_ACCESS_AUD",
-    "JWT_REFRESH_AUD"
+    "JWT_ACCESS_EXPIRES_IN",
+    "JWT_REFRESH_EXPIRES_IN"
   ],
   "tasks": {
     "build": {

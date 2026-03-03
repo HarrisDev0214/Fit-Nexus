@@ -6,7 +6,6 @@ import type { Response, Request, NextFunction } from 'express';
 const TOKEN_CONFIG = {
   access: {
     secret: jwtConfig.accessSecret,
-    audience: jwtConfig.accessAudience,
     code: {
       missing: 'UNAUTHORIZED',
       expired: 'EXPIRED_ACCESS_TOKEN',
@@ -20,7 +19,6 @@ const TOKEN_CONFIG = {
   },
   refresh: {
     secret: jwtConfig.refreshSecret,
-    audience: jwtConfig.refreshAudience,
     code: {
       missing: 'UNAUTHORIZED',
       expired: 'EXPIRED_REFRESH_TOKEN',
@@ -55,8 +53,7 @@ export const validateJWT = (jwtType: 'access' | 'refresh') => {
     try {
       const decodedJWT = jwt.verify(token, TOKEN_CONFIG[jwtType].secret, {
         algorithms: ['HS256'],
-        issuer: jwtConfig.issuer,
-        audience: TOKEN_CONFIG[jwtType].audience
+        issuer: jwtConfig.issuer
       }) as UserJwtPayload;
 
       req.user = decodedJWT;
