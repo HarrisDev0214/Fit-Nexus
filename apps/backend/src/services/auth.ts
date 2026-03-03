@@ -1,8 +1,11 @@
 import argon2 from 'argon2';
+import { randomInt } from 'crypto';
 import { userRepository } from '@/repositories/user';
+import { emailOtpRepository } from '@/repositories/emailOtp';
 import { generateAccessToken, generateRefreshToken } from '@/utils/jwt';
 import type { SignupInput, LoginInput, UpdatePasswordInput } from '@/schemas/auth';
 import { NotFound404Error, Unauthorized401Error } from '@/utils/errors';
+import { emailService } from '@/services/email';
 
 export const authService = {
   signUp: async (data: SignupInput) => {
@@ -60,5 +63,12 @@ export const authService = {
     }
 
     return generateAccessToken({ userId: data.userId, email: data.email });
+  },
+  createEmailOtp: async (userId: string, email: string) => {
+    await emailOtpRepository.deleteByUserId(userId);
+
+    const otp = randomInt(100000, 1000000).toString();
+    await emailOtpRepository.create(userId, otp);
+    await emailService.sendEmailVerificationOtp(email, otp);
   }
 };

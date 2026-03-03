@@ -13,9 +13,14 @@ const signUp = async (
     sex
   });
 
+  await authService.createEmailOtp(newUser.id, newUser.email);
+
   res.status(201).json({
     status: 'success',
-    data: newUser
+    message: 'Email 驗證碼已發送',
+    data: {
+      email: newUser.email
+    }
   });
 };
 
