@@ -58,9 +58,26 @@ const updatePassword = async (
   });
 };
 
+const refreshToken = async (
+  req: Request,
+  res: Response
+) => {
+  const { userId, email } = req.user!;
+
+  const accessToken = await authService.refreshToken({ userId, email });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      accessToken
+    }
+  });
+};
+
 export {
   signUp,
   login,
   logout,
-  updatePassword
+  updatePassword,
+  refreshToken
 };

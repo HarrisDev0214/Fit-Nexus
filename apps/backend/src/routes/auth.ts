@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { signUp, login, logout, updatePassword } from '@/controllers/auth';
+import { signUp, login, logout, updatePassword, refreshToken } from '@/controllers/auth';
 import { validateInput } from '@/middlewares/validate';
 import { validateJWT } from '@/middlewares/auth';
 import { signupSchema, loginSchema, updatePasswordSchema } from '@/schemas/auth';
@@ -10,5 +10,6 @@ authRouter.post('/signup', validateInput(signupSchema), signUp);
 authRouter.post('/login', validateInput(loginSchema), login);
 authRouter.post('/logout', validateJWT('access'), logout);
 authRouter.put('/update-password', validateJWT('access'), validateInput(updatePasswordSchema), updatePassword);
+authRouter.post('/refresh-token', validateJWT('refresh'), refreshToken);
 
 export default authRouter;

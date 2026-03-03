@@ -56,7 +56,7 @@ export const authService = {
       refreshToken
     };
   },
-  updatePassword: async (data: UpdatePasswordInput & { userId : string }) => {
+  updatePassword: async (data: UpdatePasswordInput & { userId: string }) => {
     const user = await userRepository.findById(data.userId);
 
     if (!user) {
@@ -71,5 +71,25 @@ export const authService = {
 
     const newPasswordHash = await argon2.hash(data.newPassword);
     await userRepository.updatePassword(data.userId, newPasswordHash);
+  },
+  refreshToken: async (data: UserJwtData) => {
+    const user = await userRepository.findById(data.userId);
+
+    if (!user) {
+      throw new NotFound404Error('User not found');
+    }
+
+    const accessToken = jwt.sign(
+      { userId: data.userId, email: data.email },
+      process.env.JWT_ACCESS_SECRET!,
+      {
+        algorithm: 'HS256',
+        expiresIn: '10m',
+        issuer: process.env.JWT_ISS,
+        audience: process.env.JWT_ACCESS_AUD
+      }
+    );
+
+    return accessToken;
   }
 };

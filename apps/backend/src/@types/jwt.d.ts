@@ -1,10 +1,12 @@
 import { type JwtPayload } from 'jsonwebtoken';
 
 declare global {
-  type UserJwtPayload = JwtPayload & {
+  type UserJwtData = {
     userId: string;
     email: string;
   };
+
+  type UserJwtPayload = JwtPayload & UserJwtData;
 }
 
 export {};
