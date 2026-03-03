@@ -46,8 +46,8 @@ export const validateJWT = (jwtType: 'access' | 'refresh') => {
 
     if (!token) {
       throw new Unauthorized401Error(
-        TOKEN_CONFIG[jwtType].code.missing,
-        TOKEN_CONFIG[jwtType].message.missing
+        TOKEN_CONFIG[jwtType].message.missing,
+        TOKEN_CONFIG[jwtType].code.missing
       );
     }
 
@@ -63,15 +63,15 @@ export const validateJWT = (jwtType: 'access' | 'refresh') => {
     } catch (err) {
       if (err instanceof jwt.TokenExpiredError) {
         throw new Unauthorized401Error(
-          TOKEN_CONFIG[jwtType].code.expired,
-          TOKEN_CONFIG[jwtType].message.expired
+          TOKEN_CONFIG[jwtType].message.expired,
+          TOKEN_CONFIG[jwtType].code.expired
         );
       }
 
       if (err instanceof jwt.JsonWebTokenError) {
         throw new Unauthorized401Error(
-          TOKEN_CONFIG[jwtType].code.invalid,
-          TOKEN_CONFIG[jwtType].message.invalid
+          TOKEN_CONFIG[jwtType].message.invalid,
+          TOKEN_CONFIG[jwtType].code.invalid
         );
       }
 
