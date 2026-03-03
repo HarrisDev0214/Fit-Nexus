@@ -35,6 +35,15 @@ const login = async (
   });
 };
 
+const logout = async (
+  _req: Request,
+  res: Response
+) => {
+  res.status(200).json({
+    status: 'success'
+  });
+};
+
 const updatePassword = async (
   req: Request,
   res: Response
@@ -52,5 +61,6 @@ const updatePassword = async (
 export {
   signUp,
   login,
+  logout,
   updatePassword
 };
