@@ -9,6 +9,7 @@ export const users = pgTable('users', {
   name: varchar('name', { length: 30 }).notNull(),
   avatar: text('avatar'),
   sex: sexEnum('sex').notNull(),
+  emailVerifiedAt: timestamp('email_verified_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date())
 });
