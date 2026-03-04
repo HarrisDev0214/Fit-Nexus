@@ -32,6 +32,10 @@ export const authService = {
       throw new Unauthorized401Error('Email or password is incorrect');
     }
 
+    if (!user.emailVerifiedAt) {
+      throw new BadRequest400Error('請先完成信箱驗證');
+    }
+
     const payload = { userId: user.id, email: user.email };
 
     return {
