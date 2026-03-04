@@ -71,6 +71,27 @@ export const authService = {
     await emailOtpRepository.create(userId, otp);
     await emailService.sendEmailVerificationOtp(email, otp);
   },
+  recreateEmailOtp: async (email: string) => {
+    const user = await userRepository.findByEmail(email);
+
+    if (!user) {
+      throw new NotFound404Error('User not found');
+    }
+
+    if (user.emailVerifiedAt) {
+      throw new BadRequest400Error('信箱已驗證');
+    }
+    const otpRecord = await emailOtpRepository.findByUserId(user.id);
+
+    if (otpRecord) {
+      const secondsOtpCreated = (Date.now() - otpRecord.createdAt.getTime());
+      if (secondsOtpCreated < 60 * 1000) {
+        throw new BadRequest400Error('請稍後再試');
+      }
+    }
+
+    await authService.createEmailOtp(user.id, email);
+  },
   verifyEmail: async (data: VerifyEmailInput) => {
     const user = await userRepository.findByEmail(data.email);
 

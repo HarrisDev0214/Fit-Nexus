@@ -93,11 +93,25 @@ const verifyEmail = async (
   });
 };
 
+const recreateEmailOtp = async (
+  req: Request,
+  res: Response
+) => {
+  const { email } = req.body;
+  await authService.recreateEmailOtp(email);
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Email 驗證碼已發送'
+  });
+};
+
 export {
   signUp,
   login,
   logout,
   updatePassword,
   refreshToken,
-  verifyEmail
+  verifyEmail,
+  recreateEmailOtp
 };

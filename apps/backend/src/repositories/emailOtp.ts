@@ -21,7 +21,8 @@ export const emailOtpRepository = {
       .select({
         code: emailOtps.code,
         expiresAt: emailOtps.expiresAt,
-        attempts: emailOtps.attempts
+        attempts: emailOtps.attempts,
+        createdAt: emailOtps.createdAt
       })
       .from(emailOtps)
       .where(eq(emailOtps.userId, userId));
