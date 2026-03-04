@@ -1,6 +1,6 @@
 import { db } from '@/db/db';
 import { emailOtps } from '@/db/schemas/emailOtps';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 export const emailOtpRepository = {
   create: async (userId: string, otp: string) => {
@@ -14,6 +14,24 @@ export const emailOtpRepository = {
   deleteByUserId: async (userId: string) => {
     await db
       .delete(emailOtps)
+      .where(eq(emailOtps.userId, userId));
+  },
+  findByUserId: async (userId: string) => {
+    const [otpRecord] = await db
+      .select({
+        code: emailOtps.code,
+        expiresAt: emailOtps.expiresAt,
+        attempts: emailOtps.attempts
+      })
+      .from(emailOtps)
+      .where(eq(emailOtps.userId, userId));
+
+    return otpRecord;
+  },
+  incrementAttempts: async (userId: string): Promise<void> => {
+    await db
+      .update(emailOtps)
+      .set({ attempts: sql`${emailOtps.attempts} + 1` })
       .where(eq(emailOtps.userId, userId));
   }
 };

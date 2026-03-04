@@ -79,10 +79,25 @@ const refreshToken = async (
   });
 };
 
+const verifyEmail = async (
+  req: Request,
+  res: Response
+) => {
+  const { otp, email } = req.body;
+
+  await authService.verifyEmail({ otp, email });
+
+  res.status(200).json({
+    status: 'success',
+    message: '信箱驗證成功'
+  });
+};
+
 export {
   signUp,
   login,
   logout,
   updatePassword,
-  refreshToken
+  refreshToken,
+  verifyEmail
 };

@@ -26,7 +26,12 @@ export const userRepository = {
   },
   findByEmail: async (email: string) => {
     const [user] = await db
-      .select({ id: users.id, email: users.email, passwordHash: users.passwordHash })
+      .select({
+        id: users.id,
+        email: users.email,
+        passwordHash: users.passwordHash,
+        emailVerifiedAt: users.emailVerifiedAt
+      })
       .from(users)
       .where(eq(users.email, email));
 
@@ -45,5 +50,11 @@ export const userRepository = {
       .update(users)
       .set({ passwordHash })
       .where(eq(users.id, id));
+  },
+  markEmailAsVerified: async (userId: string): Promise<void> => {
+    await db
+      .update(users)
+      .set({ emailVerifiedAt: new Date() })
+      .where(eq(users.id, userId));
   }
 };

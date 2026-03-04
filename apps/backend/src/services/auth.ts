@@ -3,8 +3,8 @@ import { randomInt } from 'crypto';
 import { userRepository } from '@/repositories/user';
 import { emailOtpRepository } from '@/repositories/emailOtp';
 import { generateAccessToken, generateRefreshToken } from '@/utils/jwt';
-import type { SignupInput, LoginInput, UpdatePasswordInput } from '@/schemas/auth';
-import { NotFound404Error, Unauthorized401Error } from '@/utils/errors';
+import type { SignupInput, LoginInput, UpdatePasswordInput, VerifyEmailInput } from '@/schemas/auth';
+import { BadRequest400Error, NotFound404Error, Unauthorized401Error } from '@/utils/errors';
 import { emailService } from '@/services/email';
 
 export const authService = {
@@ -70,5 +70,38 @@ export const authService = {
     const otp = randomInt(100000, 1000000).toString();
     await emailOtpRepository.create(userId, otp);
     await emailService.sendEmailVerificationOtp(email, otp);
+  },
+  verifyEmail: async (data: VerifyEmailInput) => {
+    const user = await userRepository.findByEmail(data.email);
+
+    if (!user) {
+      throw new NotFound404Error('User not found');
+    }
+
+    if (user.emailVerifiedAt) {
+      throw new BadRequest400Error('信箱已驗證');
+    }
+
+    const otpRecord = await emailOtpRepository.findByUserId(user.id);
+
+    if (!otpRecord) {
+      throw new NotFound404Error('OTP not found');
+    }
+
+    if (otpRecord.expiresAt < new Date()) {
+      throw new BadRequest400Error('OTP 已過期');
+    }
+
+    if (otpRecord.attempts >= 5) {
+      throw new BadRequest400Error('失敗次數過多，請重新發送驗證碼');
+    }
+
+    if (otpRecord.code !== data.otp) {
+      await emailOtpRepository.incrementAttempts(user.id);
+      throw new BadRequest400Error('OTP 驗證碼錯誤');
+    }
+
+    await emailOtpRepository.deleteByUserId(user.id);
+    await userRepository.markEmailAsVerified(user.id);
   }
 };
