@@ -1,11 +1,12 @@
 import argon2 from 'argon2';
-import { randomInt } from 'crypto';
+import { randomBytes, randomInt } from 'crypto';
 import { userRepository } from '@/repositories/user';
 import { emailOtpRepository } from '@/repositories/emailOtp';
 import { generateAccessToken, generateRefreshToken } from '@/utils/jwt';
-import type { SignupInput, LoginInput, UpdatePasswordInput, VerifyEmailInput } from '@/schemas/auth';
+import type { SignupInput, LoginInput, UpdatePasswordInput, VerifyEmailInput, VerifyPasswordOtpInput } from '@/schemas/auth';
 import { BadRequest400Error, NotFound404Error, Unauthorized401Error } from '@/utils/errors';
 import { emailService } from '@/services/email';
+import { passwordResetTokenRepository } from '@/repositories/passwordResetToken';
 
 export const authService = {
   signUp: async (data: SignupInput) => {
@@ -155,5 +156,31 @@ export const authService = {
       }
       await authService.createEmailOtp('passwordReset', user.id, email);
     }
+  },
+  verifyPasswordOtp: async (data: VerifyPasswordOtpInput) => {
+    const user = await userRepository.findByEmail(data.email);
+    if (!user) {
+      throw new BadRequest400Error('驗證碼無效或已過期');
+    }
+
+    const otpRecord = await emailOtpRepository.findByUserId(user.id);
+    if (!otpRecord) {
+      throw new BadRequest400Error('驗證碼無效或已過期');
+    }
+    if (otpRecord.attempts >= 5) {
+      throw new BadRequest400Error('失敗次數過多，請重新發送驗證碼');
+    }
+    if (otpRecord.code !== data.otp || otpRecord.expiresAt < new Date()) {
+      await emailOtpRepository.incrementAttempts(user.id);
+      throw new BadRequest400Error('驗證碼無效或已過期');
+    }
+
+    await emailOtpRepository.deleteByUserId(user.id);
+    await passwordResetTokenRepository.deleteByUserId(user.id);
+
+    const token = randomBytes(32).toString('hex');
+    await passwordResetTokenRepository.create(token, user.id, data.email);
+
+    return token;
   }
 };

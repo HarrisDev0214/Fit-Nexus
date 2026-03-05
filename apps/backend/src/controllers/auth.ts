@@ -119,6 +119,21 @@ const createPasswordResetOtp = async (
   });
 };
 
+const verifyPasswordOtp = async (
+  req: Request,
+  res: Response
+) => {
+  const { otp, email } = req.body;
+  const resetToken = await authService.verifyPasswordOtp({ otp, email });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      resetToken
+    }
+  });
+};
+
 export {
   signUp,
   login,
@@ -127,5 +142,6 @@ export {
   refreshToken,
   verifyEmail,
   recreateEmailOtp,
-  createPasswordResetOtp
+  createPasswordResetOtp,
+  verifyPasswordOtp
 };
