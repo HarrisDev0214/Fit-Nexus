@@ -68,12 +68,21 @@ export const authService = {
 
     return generateAccessToken({ userId: data.userId, email: data.email });
   },
-  createEmailOtp: async (userId: string, email: string) => {
+  createEmailOtp: async (
+    emailType: 'emailVerification',
+    userId: string,
+    email: string
+  ) => {
     await emailOtpRepository.deleteByUserId(userId);
 
     const otp = randomInt(100000, 1000000).toString();
     await emailOtpRepository.create(userId, otp);
-    await emailService.sendEmailVerificationOtp(email, otp);
+
+    switch (emailType) {
+      case 'emailVerification':
+        await emailService.sendEmailVerificationOtp(email, otp);
+        break;
+    }
   },
   recreateEmailOtp: async (email: string) => {
     const user = await userRepository.findByEmail(email);
@@ -94,7 +103,7 @@ export const authService = {
       }
     }
 
-    await authService.createEmailOtp(user.id, email);
+    await authService.createEmailOtp('emailVerification', user.id, email);
   },
   verifyEmail: async (data: VerifyEmailInput) => {
     const user = await userRepository.findByEmail(data.email);

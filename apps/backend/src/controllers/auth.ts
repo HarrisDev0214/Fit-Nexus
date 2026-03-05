@@ -13,7 +13,7 @@ const signUp = async (
     sex
   });
 
-  await authService.createEmailOtp(newUser.id, newUser.email);
+  await authService.createEmailOtp('emailVerification', newUser.id, newUser.email);
 
   res.status(201).json({
     status: 'success',
