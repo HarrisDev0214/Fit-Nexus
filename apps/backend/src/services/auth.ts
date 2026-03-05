@@ -69,7 +69,7 @@ export const authService = {
     return generateAccessToken({ userId: data.userId, email: data.email });
   },
   createEmailOtp: async (
-    emailType: 'emailVerification',
+    emailType: 'emailVerification' | 'passwordReset',
     userId: string,
     email: string
   ) => {
@@ -81,6 +81,9 @@ export const authService = {
     switch (emailType) {
       case 'emailVerification':
         await emailService.sendEmailVerificationOtp(email, otp);
+        break;
+      case 'passwordReset':
+        await emailService.sendPasswordResetOtp(email, otp);
         break;
     }
   },
@@ -137,5 +140,20 @@ export const authService = {
 
     await emailOtpRepository.deleteByUserId(user.id);
     await userRepository.markEmailAsVerified(user.id);
+  },
+  createPasswordOtp: async (email: string) => {
+    const user = await userRepository.findByEmail(email);
+
+    if (user) {
+      const otpRecord = await emailOtpRepository.findByUserId(user.id);
+
+      if (otpRecord) {
+        const secondsOtpCreated = (Date.now() - otpRecord.createdAt.getTime());
+        if (secondsOtpCreated < 60 * 1000) {
+          return;
+        }
+      }
+      await authService.createEmailOtp('passwordReset', user.id, email);
+    }
   }
 };

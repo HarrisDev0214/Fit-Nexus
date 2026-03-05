@@ -41,7 +41,14 @@ export const recreateEmailOtpSchema = z.object({
   })
 });
 
+export const createPasswordResetOtpSchema = z.object({
+  body: z.object({
+    email: z.string().email('Email 格式不正確')
+  })
+});
+
 export type SignupInput = z.infer<typeof signupSchema>['body'];
 export type LoginInput = z.infer<typeof loginSchema>['body'];
 export type UpdatePasswordInput = z.infer<typeof updatePasswordSchema>['body'];
 export type VerifyEmailInput = z.infer<typeof verifyEmailSchema>['body'];
+export type CreateEmailOtpInput = z.infer<typeof createPasswordResetOtpSchema>['body'];

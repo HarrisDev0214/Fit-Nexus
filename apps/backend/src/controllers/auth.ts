@@ -106,6 +106,19 @@ const recreateEmailOtp = async (
   });
 };
 
+const createPasswordResetOtp = async (
+  req: Request,
+  res: Response
+) => {
+  const { email } = req.body;
+  await authService.createPasswordOtp(email);
+
+  res.status(200).json({
+    status: 'success',
+    message: '如果此 Email 已註冊，您將會收到驗證碼'
+  });
+};
+
 export {
   signUp,
   login,
@@ -113,5 +126,6 @@ export {
   updatePassword,
   refreshToken,
   verifyEmail,
-  recreateEmailOtp
+  recreateEmailOtp,
+  createPasswordResetOtp
 };
