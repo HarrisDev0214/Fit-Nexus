@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "start": "node dist/server.js",
+    "dev": "tsx watch src/bin/www.ts",
+    "start": "node dist/www.js",
     "build": "tsup",
     "lint": "eslint .",
     "check-types": "tsc --noEmit",
