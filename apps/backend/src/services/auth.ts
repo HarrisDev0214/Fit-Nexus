@@ -3,6 +3,7 @@ import { randomBytes, randomInt } from 'crypto';
 import { userRepository } from '@/repositories/user';
 import { emailOtpRepository } from '@/repositories/emailOtp';
 import { generateAccessToken, generateRefreshToken } from '@/utils/jwt';
+import { hashToken } from '@/utils/crypto';
 import type {
   SignupInput,
   LoginInput,
@@ -88,13 +89,18 @@ export const authService = {
     const otp = randomInt(100000, 1000000).toString();
     await emailOtpRepository.upsert(userId, otp);
 
-    switch (emailType) {
-      case 'emailVerification':
-        await emailService.sendEmailVerificationOtp(email, otp);
-        break;
-      case 'passwordReset':
-        await emailService.sendPasswordResetOtp(email, otp);
-        break;
+    try {
+      switch (emailType) {
+        case 'emailVerification':
+          await emailService.sendEmailVerificationOtp(email, otp);
+          break;
+        case 'passwordReset':
+          await emailService.sendPasswordResetOtp(email, otp);
+          break;
+      }
+    } catch (err) {
+      await emailOtpRepository.deleteByUserId(userId);
+      throw err;
     }
   },
   recreateEmailOtp: async (email: string) => {
@@ -188,12 +194,14 @@ export const authService = {
     await passwordResetTokenRepository.deleteByUserId(user.id);
 
     const token = randomBytes(32).toString('hex');
-    await passwordResetTokenRepository.create(token, user.id, data.email);
+    const tokenHash = hashToken(token);
+    await passwordResetTokenRepository.create(tokenHash, user.id, data.email);
 
     return token;
   },
   resetPassword: async (data: ResetPasswordInput) => {
-    const tokenRecord = await passwordResetTokenRepository.findByToken(data.resetToken);
+    const tokenHash = hashToken(data.resetToken);
+    const tokenRecord = await passwordResetTokenRepository.findByTokenHash(tokenHash);
     if (!tokenRecord) {
       throw new BadRequest400Error('重設密碼請求無效或已過期，請重新申請');
     }
@@ -204,7 +212,12 @@ export const authService = {
 
     const newPasswordHash = await argon2.hash(data.newPassword);
     await userRepository.updatePassword(tokenRecord.userId, newPasswordHash);
-    await emailService.sendPasswordChanged(tokenRecord.email);
     await passwordResetTokenRepository.deleteByUserId(tokenRecord.userId);
+
+    try {
+      await emailService.sendPasswordChanged(tokenRecord.email);
+    } catch {
+      // Email notification failure should not affect password reset success
+    }
   }
 };

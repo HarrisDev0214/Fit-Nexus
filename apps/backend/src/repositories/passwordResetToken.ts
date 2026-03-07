@@ -3,10 +3,10 @@ import { passwordResetTokens } from '@/db/schemas/passwordResetTokens';
 import { eq } from 'drizzle-orm';
 
 export const passwordResetTokenRepository = {
-  create: async (token: string, userId: string, email: string) => {
+  create: async (tokenHash: string, userId: string, email: string) => {
     await db.insert(passwordResetTokens).values({
       userId: userId,
-      token,
+      tokenHash,
       email,
       expiresAt: new Date(Date.now() + 5 * 60 * 1000)
     });
@@ -16,14 +16,14 @@ export const passwordResetTokenRepository = {
       .delete(passwordResetTokens)
       .where(eq(passwordResetTokens.userId, userId));
   },
-  findByToken: async (token: string) => {
+  findByTokenHash: async (tokenHash: string) => {
     const [tokenRecord] = await db.select({
       userId: passwordResetTokens.userId,
       expiresAt: passwordResetTokens.expiresAt,
       email: passwordResetTokens.email
     })
       .from(passwordResetTokens)
-      .where(eq(passwordResetTokens.token, token));
+      .where(eq(passwordResetTokens.tokenHash, tokenHash));
 
     return tokenRecord;
   }

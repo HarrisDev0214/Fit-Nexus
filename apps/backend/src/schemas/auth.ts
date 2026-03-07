@@ -30,7 +30,7 @@ export const updatePasswordSchema = z.object({
 
 export const verifyEmailOtpSchema = z.object({
   body: z.object({
-    otp: z.string().min(6, '驗證碼必須為 6 位數').max(6, '驗證碼必須為 6 位數'),
+    otp: z.string().regex(/^\d{6}$/, '驗證碼必須為 6 位數'),
     email: z.string().email('Email 格式不正確')
   })
 });
@@ -49,7 +49,7 @@ export const createPasswordResetOtpSchema = z.object({
 
 export const verifyPasswordResetOtpSchema = z.object({
   body: z.object({
-    otp: z.string().min(6, '驗證碼必須為 6 位數').max(6, '驗證碼必須為 6 位數'),
+    otp: z.string().regex(/^\d{6}$/, '驗證碼必須為 6 位數'),
     email: z.string().email('Email 格式不正確')
   })
 });
