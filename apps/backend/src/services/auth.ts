@@ -3,8 +3,18 @@ import { randomBytes, randomInt } from 'crypto';
 import { userRepository } from '@/repositories/user';
 import { emailOtpRepository } from '@/repositories/emailOtp';
 import { generateAccessToken, generateRefreshToken } from '@/utils/jwt';
-import type { SignupInput, LoginInput, UpdatePasswordInput, VerifyEmailInput, VerifyPasswordOtpInput } from '@/schemas/auth';
-import { BadRequest400Error, NotFound404Error, Unauthorized401Error } from '@/utils/errors';
+import type {
+  SignupInput,
+  LoginInput,
+  UpdatePasswordInput,
+  VerifyEmailOtpInput,
+  VerifyPasswordResetOtpInput
+} from '@/schemas/auth';
+import {
+  BadRequest400Error,
+  NotFound404Error,
+  Unauthorized401Error
+} from '@/utils/errors';
 import { emailService } from '@/services/email';
 import { passwordResetTokenRepository } from '@/repositories/passwordResetToken';
 
@@ -109,7 +119,7 @@ export const authService = {
 
     await authService.createEmailOtp('emailVerification', user.id, email);
   },
-  verifyEmail: async (data: VerifyEmailInput) => {
+  verifyEmailOtp: async (data: VerifyEmailOtpInput) => {
     const user = await userRepository.findByEmail(data.email);
 
     if (!user) {
@@ -157,7 +167,7 @@ export const authService = {
       await authService.createEmailOtp('passwordReset', user.id, email);
     }
   },
-  verifyPasswordOtp: async (data: VerifyPasswordOtpInput) => {
+  verifyPasswordResetOtp: async (data: VerifyPasswordResetOtpInput) => {
     const user = await userRepository.findByEmail(data.email);
     if (!user) {
       throw new BadRequest400Error('驗證碼無效或已過期');

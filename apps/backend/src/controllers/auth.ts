@@ -79,13 +79,13 @@ const refreshToken = async (
   });
 };
 
-const verifyEmail = async (
+const verifyEmailOtp = async (
   req: Request,
   res: Response
 ) => {
   const { otp, email } = req.body;
 
-  await authService.verifyEmail({ otp, email });
+  await authService.verifyEmailOtp({ otp, email });
 
   res.status(200).json({
     status: 'success',
@@ -119,12 +119,12 @@ const createPasswordResetOtp = async (
   });
 };
 
-const verifyPasswordOtp = async (
+const verifyPasswordResetOtp = async (
   req: Request,
   res: Response
 ) => {
   const { otp, email } = req.body;
-  const resetToken = await authService.verifyPasswordOtp({ otp, email });
+  const resetToken = await authService.verifyPasswordResetOtp({ otp, email });
 
   res.status(200).json({
     status: 'success',
@@ -140,8 +140,8 @@ export {
   logout,
   updatePassword,
   refreshToken,
-  verifyEmail,
+  verifyEmailOtp,
   recreateEmailOtp,
   createPasswordResetOtp,
-  verifyPasswordOtp
+  verifyPasswordResetOtp
 };
