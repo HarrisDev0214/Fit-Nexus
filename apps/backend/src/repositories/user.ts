@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import { db } from '@/db/db';
 import { users } from '@/db/schemas/users';
 import type { SignupInput } from '@/schemas/auth';
@@ -55,6 +55,11 @@ export const userRepository = {
     await db
       .update(users)
       .set({ emailVerifiedAt: new Date() })
-      .where(eq(users.id, userId));
+      .where(
+        and(
+          eq(users.id, userId),
+          isNull(users.emailVerifiedAt)
+        )
+      );
   }
 };

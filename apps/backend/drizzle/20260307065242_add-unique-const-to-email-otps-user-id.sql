@@ -1,0 +1,1 @@
+ALTER TABLE "email_otps" ADD CONSTRAINT "email_otps_user_id_unique" UNIQUE("user_id");

@@ -85,10 +85,8 @@ export const authService = {
     userId: string,
     email: string
   ) => {
-    await emailOtpRepository.deleteByUserId(userId);
-
     const otp = randomInt(100000, 1000000).toString();
-    await emailOtpRepository.create(userId, otp);
+    await emailOtpRepository.upsert(userId, otp);
 
     switch (emailType) {
       case 'emailVerification':
