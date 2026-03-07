@@ -19,22 +19,8 @@
     {
       "idx": 2,
       "version": "7",
-      "when": 1772859773710,
-      "tag": "20260307050253_create_password_reset_tokens_table",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1772866362817,
-      "tag": "20260307065242_add-unique-const-to-email-otps-user-id",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1772869032765,
-      "tag": "20260307073712_rename-token-to-token-hash",
+      "when": 1772871090327,
+      "tag": "20260307081130_create_password_reset_tokens_table",
       "breakpoints": true
     }
   ]

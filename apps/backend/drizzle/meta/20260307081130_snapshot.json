@@ -1,6 +1,6 @@
 {
-  "id": "42b342fa-bbd5-42de-8a1b-fa2907121813",
-  "prevId": "902878db-c6b5-4bd0-b81b-51901d6909af",
+  "id": "d4d0cbb5-efee-4ed2-b143-6cdb54d2dbb5",
+  "prevId": "e51a8e8e-0041-4d0b-bc32-5a28dbdf8699",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -95,15 +95,15 @@
           "primaryKey": false,
           "notNull": true
         },
-        "token": {
-          "name": "token",
+        "token_hash": {
+          "name": "token_hash",
           "type": "varchar(64)",
           "primaryKey": false,
           "notNull": true
         },
         "email": {
           "name": "email",
-          "type": "varchar(255)",
+          "type": "varchar(256)",
           "primaryKey": false,
           "notNull": true
         },
