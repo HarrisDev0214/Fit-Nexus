@@ -19,5 +19,13 @@ export const emailService = {
       subject: 'Fit-Nexus 密碼重置',
       html: `<p>您的驗證碼為： ${otp}</p>`
     });
+  },
+  sendPasswordChanged: async (to: string) => {
+    await resend.emails.send({
+      from: emailConfig.fromEmail,
+      to,
+      subject: 'Fit-Nexus 密碼變更成功',
+      html: '<p>您的密碼已變更成功，請重新登入</p>'
+    });
   }
 };

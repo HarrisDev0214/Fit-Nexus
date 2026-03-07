@@ -10,7 +10,8 @@ import {
   verifyEmailOtp,
   recreateEmailOtp,
   createPasswordResetOtp,
-  verifyPasswordResetOtp
+  verifyPasswordResetOtp,
+  resetPassword
 } from '@/controllers/auth';
 import {
   signupSchema,
@@ -19,7 +20,8 @@ import {
   verifyEmailOtpSchema,
   recreateEmailOtpSchema,
   createPasswordResetOtpSchema,
-  verifyPasswordResetOtpSchema
+  verifyPasswordResetOtpSchema,
+  resetPasswordSchema
 } from '@/schemas/auth';
 
 const authRouter = Router();
@@ -38,5 +40,6 @@ authRouter.post('/email/verify', validateInput(verifyEmailOtpSchema), verifyEmai
 authRouter.patch('/password', validateJWT('access'), validateInput(updatePasswordSchema), updatePassword);
 authRouter.post('/password/otp', validateInput(createPasswordResetOtpSchema), createPasswordResetOtp);
 authRouter.post('/password/verify', validateInput(verifyPasswordResetOtpSchema), verifyPasswordResetOtp);
+authRouter.post('/password/reset', validateInput(resetPasswordSchema), resetPassword);
 
 export default authRouter;

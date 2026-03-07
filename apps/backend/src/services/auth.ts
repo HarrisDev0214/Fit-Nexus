@@ -8,7 +8,8 @@ import type {
   LoginInput,
   UpdatePasswordInput,
   VerifyEmailOtpInput,
-  VerifyPasswordResetOtpInput
+  VerifyPasswordResetOtpInput,
+  ResetPasswordInput
 } from '@/schemas/auth';
 import {
   BadRequest400Error,
@@ -192,5 +193,20 @@ export const authService = {
     await passwordResetTokenRepository.create(token, user.id, data.email);
 
     return token;
+  },
+  resetPassword: async (data: ResetPasswordInput) => {
+    const tokenRecord = await passwordResetTokenRepository.findByToken(data.resetToken);
+    if (!tokenRecord) {
+      throw new BadRequest400Error('重設密碼請求無效或已過期，請重新申請');
+    }
+    if (tokenRecord.expiresAt < new Date()) {
+      await passwordResetTokenRepository.deleteByUserId(tokenRecord.userId);
+      throw new BadRequest400Error('重設密碼請求無效或已過期，請重新申請');
+    }
+
+    const newPasswordHash = await argon2.hash(data.newPassword);
+    await userRepository.updatePassword(tokenRecord.userId, newPasswordHash);
+    await emailService.sendPasswordChanged(tokenRecord.email);
+    await passwordResetTokenRepository.deleteByUserId(tokenRecord.userId);
   }
 };

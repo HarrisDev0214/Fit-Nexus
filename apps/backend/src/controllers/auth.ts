@@ -12,7 +12,6 @@ const signUp = async (
     password,
     sex
   });
-
   await authService.createEmailOtp('emailVerification', newUser.id, newUser.email);
 
   res.status(201).json({
@@ -55,7 +54,6 @@ const updatePassword = async (
 ) => {
   const { oldPassword, newPassword } = req.body;
   const { userId } = req.user!;
-
   await authService.updatePassword({ userId, oldPassword, newPassword });
 
   res.status(200).json({
@@ -68,7 +66,6 @@ const refreshToken = async (
   res: Response
 ) => {
   const { userId, email } = req.user!;
-
   const accessToken = await authService.refreshToken({ userId, email });
 
   res.status(200).json({
@@ -84,7 +81,6 @@ const verifyEmailOtp = async (
   res: Response
 ) => {
   const { otp, email } = req.body;
-
   await authService.verifyEmailOtp({ otp, email });
 
   res.status(200).json({
@@ -134,6 +130,19 @@ const verifyPasswordResetOtp = async (
   });
 };
 
+const resetPassword = async (
+  req: Request,
+  res: Response
+) => {
+  const { resetToken, newPassword, confirmNewPassword } = req.body;
+  await authService.resetPassword({ resetToken, newPassword, confirmNewPassword });
+
+  res.status(200).json({
+    status: 'success',
+    message: '密碼重置成功'
+  });
+};
+
 export {
   signUp,
   login,
@@ -143,5 +152,6 @@ export {
   verifyEmailOtp,
   recreateEmailOtp,
   createPasswordResetOtp,
-  verifyPasswordResetOtp
+  verifyPasswordResetOtp,
+  resetPassword
 };

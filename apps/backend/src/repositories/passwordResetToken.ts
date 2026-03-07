@@ -15,5 +15,16 @@ export const passwordResetTokenRepository = {
     await db
       .delete(passwordResetTokens)
       .where(eq(passwordResetTokens.userId, userId));
+  },
+  findByToken: async (token: string) => {
+    const [tokenRecord] = await db.select({
+      userId: passwordResetTokens.userId,
+      expiresAt: passwordResetTokens.expiresAt,
+      email: passwordResetTokens.email
+    })
+      .from(passwordResetTokens)
+      .where(eq(passwordResetTokens.token, token));
+
+    return tokenRecord;
   }
 };
