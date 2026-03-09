@@ -1,6 +1,6 @@
 {
-  "id": "d4d0cbb5-efee-4ed2-b143-6cdb54d2dbb5",
-  "prevId": "e51a8e8e-0041-4d0b-bc32-5a28dbdf8699",
+  "id": "1bdee957-a2f3-4345-93c9-991b15cbf5be",
+  "prevId": "9c22cb74-51ae-4177-8bd9-736bc9d59d13",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -36,13 +36,13 @@
         },
         "expires_at": {
           "name": "expires_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
@@ -109,13 +109,13 @@
         },
         "expires_at": {
           "name": "expires_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
@@ -187,20 +187,20 @@
         },
         "email_verified_at": {
           "name": "email_verified_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"

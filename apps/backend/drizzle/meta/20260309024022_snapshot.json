@@ -1,6 +1,6 @@
 {
-  "id": "e51a8e8e-0041-4d0b-bc32-5a28dbdf8699",
-  "prevId": "9fd7d499-2f84-4b90-94c8-b164dd952641",
+  "id": "9c22cb74-51ae-4177-8bd9-736bc9d59d13",
+  "prevId": "7f2465be-bea4-4f42-9477-e995e37d9d80",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -36,13 +36,13 @@
         },
         "expires_at": {
           "name": "expires_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
@@ -65,7 +65,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "email_otps_user_id_unique": {
+          "name": "email_otps_user_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -114,20 +122,20 @@
         },
         "email_verified_at": {
           "name": "email_verified_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"

@@ -6,6 +6,6 @@ export const emailOtps = pgTable('email_otps', {
   userId: uuid('user_id').notNull().references(() => users.id).unique(),
   code: varchar('code', { length: 6 }).notNull(),
   attempts: integer('attempts').default(0).notNull(),
-  expiresAt: timestamp('expires_at').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull()
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull()
 });
