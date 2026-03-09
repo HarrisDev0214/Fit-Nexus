@@ -5,7 +5,9 @@ const requiredEnvVars = [
   'JWT_REFRESH_SECRET',
   'JWT_ISS',
   'JWT_ACCESS_EXPIRES_IN',
-  'JWT_REFRESH_EXPIRES_IN'
+  'JWT_REFRESH_EXPIRES_IN',
+  'RESEND_API_KEY',
+  'RESEND_FROM_EMAIL'
 ] as const;
 
 const missingVars = requiredEnvVars.filter((key) => !process.env[key]);
@@ -22,4 +24,9 @@ export const jwtConfig = {
   issuer: process.env.JWT_ISS as string,
   accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN as StringValue,
   refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN as StringValue
+} as const;
+
+export const emailConfig = {
+  resendApiKey: process.env.RESEND_API_KEY as string,
+  fromEmail: process.env.RESEND_FROM_EMAIL as string
 } as const;

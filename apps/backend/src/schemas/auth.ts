@@ -4,7 +4,7 @@ export const signupSchema = z.object({
   body: z.object({
     name: z.string().min(1, '名稱不可為空').max(30, '名稱長度不可超過 30 個字元'),
     email: z.string().email('Email 格式不正確').max(256, 'Email 長度不可超過 256 個字元'),
-    password: z.string().min(8, '密碼長度至少為 8 個字元'),
+    password: z.string().min(8, '密碼長度至少為 8 個字元').max(50, '密碼長度不可超過 50 個字元'),
     sex: z.enum(['male', 'female'], {
       message: '性別必須為 male 或 female'
     })
@@ -14,20 +14,60 @@ export const signupSchema = z.object({
 export const loginSchema = z.object({
   body: z.object({
     email: z.string().email('Email 格式不正確'),
-    password: z.string().min(1, '密碼不可為空').max(256, '密碼長度不可超過 256 個字元')
+    password: z.string().min(1, '密碼不可為空').max(50, '密碼長度不可超過 50 個字元')
   })
 });
 
 export const updatePasswordSchema = z.object({
   body: z.object({
     oldPassword: z.string().min(1, '密碼不可為空').max(256, '密碼長度不可超過 256 個字元'),
-    newPassword: z.string().min(8, '密碼長度至少為 8 個字元').max(256, '密碼長度不可超過 256 個字元')
+    newPassword: z.string().min(8, '密碼長度至少為 8 個字元').max(50, '密碼長度不可超過 50 個字元')
   }).refine(data => data.oldPassword !== data.newPassword, {
     message: '新密碼不能與舊密碼相同',
     path: ['newPassword']
   })
 });
 
+export const verifyEmailOtpSchema = z.object({
+  body: z.object({
+    otp: z.string().regex(/^\d{6}$/, '驗證碼必須為 6 位數'),
+    email: z.string().email('Email 格式不正確')
+  })
+});
+
+export const recreateEmailOtpSchema = z.object({
+  body: z.object({
+    email: z.string().email('Email 格式不正確')
+  })
+});
+
+export const createPasswordResetOtpSchema = z.object({
+  body: z.object({
+    email: z.string().email('Email 格式不正確')
+  })
+});
+
+export const verifyPasswordResetOtpSchema = z.object({
+  body: z.object({
+    otp: z.string().regex(/^\d{6}$/, '驗證碼必須為 6 位數'),
+    email: z.string().email('Email 格式不正確')
+  })
+});
+
+export const resetPasswordSchema = z.object({
+  body: z.object({
+    resetToken: z.string().min(1, '重設密碼 token 不可為空'),
+    newPassword: z.string().min(8, '密碼長度至少為 8 個字元').max(50, '密碼長度不可超過 50 個字元'),
+    confirmNewPassword: z.string().min(1, '確認密碼不可為空')
+  }).refine(data => data.newPassword === data.confirmNewPassword, {
+    message: '確認密碼與密碼不一致',
+    path: ['confirmNewPassword']
+  })
+});
+
 export type SignupInput = z.infer<typeof signupSchema>['body'];
 export type LoginInput = z.infer<typeof loginSchema>['body'];
 export type UpdatePasswordInput = z.infer<typeof updatePasswordSchema>['body'];
+export type VerifyEmailOtpInput = z.infer<typeof verifyEmailOtpSchema>['body'];
+export type VerifyPasswordResetOtpInput = z.infer<typeof verifyPasswordResetOtpSchema>['body'];
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>['body'];

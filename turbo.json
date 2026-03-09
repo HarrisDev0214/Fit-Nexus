@@ -8,7 +8,9 @@
     "JWT_REFRESH_SECRET",
     "JWT_ISS",
     "JWT_ACCESS_EXPIRES_IN",
-    "JWT_REFRESH_EXPIRES_IN"
+    "JWT_REFRESH_EXPIRES_IN",
+    "RESEND_API_KEY",
+    "RESEND_FROM_EMAIL"
   ],
   "tasks": {
     "build": {

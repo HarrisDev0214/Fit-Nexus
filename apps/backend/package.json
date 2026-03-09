@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "start": "node dist/server.js",
+    "dev": "tsx watch src/bin/www.ts",
+    "start": "node dist/www.js",
     "build": "tsup",
     "lint": "eslint .",
     "check-types": "tsc --noEmit",
@@ -21,6 +21,7 @@
     "jsonwebtoken": "9.0.3",
     "pg": "8.18.0",
     "pino": "10.3.1",
+    "resend": "6.9.3",
     "zod": "4.3.6"
   },
   "devDependencies": {

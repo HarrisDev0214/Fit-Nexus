@@ -4,8 +4,6 @@ import { NotFound404Error } from '@/utils/errors';
 import authRouter from '@/routes/auth';
 
 const app = express();
-const PORT = Number(process.env.PORT) || 8080;
-const HOST = process.env.HOST || '0.0.0.0';
 
 app.use(express.json());
 app.use(jsonErrorHandler);
@@ -22,7 +20,4 @@ app.use((req, _res, next) => {
 
 app.use(globalErrorHandler);
 
-app.listen(PORT, HOST, () => {
-  const baseUrl = HOST === '0.0.0.0' ? 'localhost' : HOST;
-  console.log(`Server is running at http://${baseUrl}:${PORT}`);
-});
+export default app;

@@ -5,8 +5,22 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1772079148361,
-      "tag": "20260226041228_create_users_table",
+      "when": 1773023976053,
+      "tag": "20260309023936_create_users_table",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1773024022791,
+      "tag": "20260309024022_create_email_otps_table",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773024089718,
+      "tag": "20260309024129_create_password_reset_tokens_table",
       "breakpoints": true
     }
   ]

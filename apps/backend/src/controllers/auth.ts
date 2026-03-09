@@ -12,10 +12,14 @@ const signUp = async (
     password,
     sex
   });
+  await authService.createEmailOtp('emailVerification', newUser.id, newUser.email);
 
   res.status(201).json({
     status: 'success',
-    data: newUser
+    message: 'Email 驗證碼已發送',
+    data: {
+      email: newUser.email
+    }
   });
 };
 
@@ -50,7 +54,6 @@ const updatePassword = async (
 ) => {
   const { oldPassword, newPassword } = req.body;
   const { userId } = req.user!;
-
   await authService.updatePassword({ userId, oldPassword, newPassword });
 
   res.status(200).json({
@@ -63,7 +66,6 @@ const refreshToken = async (
   res: Response
 ) => {
   const { userId, email } = req.user!;
-
   const accessToken = await authService.refreshToken({ userId, email });
 
   res.status(200).json({
@@ -74,10 +76,82 @@ const refreshToken = async (
   });
 };
 
+const verifyEmailOtp = async (
+  req: Request,
+  res: Response
+) => {
+  const { otp, email } = req.body;
+  await authService.verifyEmailOtp({ otp, email });
+
+  res.status(200).json({
+    status: 'success',
+    message: '信箱驗證成功'
+  });
+};
+
+const recreateEmailOtp = async (
+  req: Request,
+  res: Response
+) => {
+  const { email } = req.body;
+  await authService.recreateEmailOtp(email);
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Email 驗證碼已發送'
+  });
+};
+
+const createPasswordResetOtp = async (
+  req: Request,
+  res: Response
+) => {
+  const { email } = req.body;
+  await authService.createPasswordOtp(email);
+
+  res.status(200).json({
+    status: 'success',
+    message: '如果此 Email 已註冊，您將會收到驗證碼'
+  });
+};
+
+const verifyPasswordResetOtp = async (
+  req: Request,
+  res: Response
+) => {
+  const { otp, email } = req.body;
+  const resetToken = await authService.verifyPasswordResetOtp({ otp, email });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      resetToken
+    }
+  });
+};
+
+const resetPassword = async (
+  req: Request,
+  res: Response
+) => {
+  const { resetToken, newPassword, confirmNewPassword } = req.body;
+  await authService.resetPassword({ resetToken, newPassword, confirmNewPassword });
+
+  res.status(200).json({
+    status: 'success',
+    message: '密碼重置成功'
+  });
+};
+
 export {
   signUp,
   login,
   logout,
   updatePassword,
-  refreshToken
+  refreshToken,
+  verifyEmailOtp,
+  recreateEmailOtp,
+  createPasswordResetOtp,
+  verifyPasswordResetOtp,
+  resetPassword
 };
