@@ -29,6 +29,11 @@
     "start": {
       "dependsOn": ["build"],
       "cache": false
+    },
+    "preview": {
+      "dependsOn": ["build"],
+      "persistent": true,
+      "cache": false
     }
   }
 }
