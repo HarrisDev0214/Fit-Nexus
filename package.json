@@ -10,9 +10,11 @@
   ],
   "scripts": {
     "dev:backend": "turbo run dev -F backend",
+    "dev:client": "turbo run dev -F client",
     "build:backend": "turbo run build -F backend",
     "build:client": "turbo run build -F client",
     "start:backend": "turbo run start -F backend",
+    "preview:client": "turbo run preview -F client",
     "lint": "turbo run lint",
     "lint:backend": "turbo run lint -F backend",
     "lint:client": "turbo run lint -F client",
