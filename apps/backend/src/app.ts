@@ -2,9 +2,12 @@ import express, { type Request, type Response } from 'express';
 import { jsonErrorHandler, globalErrorHandler } from '@/middlewares/errorHandler';
 import { NotFound404Error } from '@/utils/errors';
 import authRouter from '@/routes/auth';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocs from '@/config/swagger.js';
 
 const app = express();
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use(express.json());
 app.use(jsonErrorHandler);
 
