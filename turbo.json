@@ -10,7 +10,9 @@
     "JWT_ACCESS_EXPIRES_IN",
     "JWT_REFRESH_EXPIRES_IN",
     "RESEND_API_KEY",
-    "RESEND_FROM_EMAIL"
+    "RESEND_FROM_EMAIL",
+    "SWAGGER_USER",
+    "SWAGGER_PASSWORD"
   ],
   "tasks": {
     "build": {
