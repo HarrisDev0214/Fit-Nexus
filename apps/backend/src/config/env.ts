@@ -7,7 +7,9 @@ const requiredEnvVars = [
   'JWT_ACCESS_EXPIRES_IN',
   'JWT_REFRESH_EXPIRES_IN',
   'RESEND_API_KEY',
-  'RESEND_FROM_EMAIL'
+  'RESEND_FROM_EMAIL',
+  'SWAGGER_USER',
+  'SWAGGER_PASSWORD'
 ] as const;
 
 const missingVars = requiredEnvVars.filter((key) => !process.env[key]);
@@ -29,4 +31,9 @@ export const jwtConfig = {
 export const emailConfig = {
   resendApiKey: process.env.RESEND_API_KEY as string,
   fromEmail: process.env.RESEND_FROM_EMAIL as string
+} as const;
+
+export const swaggerConfig = {
+  user: process.env.SWAGGER_USER as string,
+  password: process.env.SWAGGER_PASSWORD as string
 } as const;

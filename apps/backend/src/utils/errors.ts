@@ -10,8 +10,8 @@ export class AppError extends Error {
 }
 
 export class BadRequest400Error extends AppError {
-  constructor(message = 'Bad Request') {
-    super(400, 'BAD_REQUEST', message);
+  constructor(message = 'Bad Request', code = 'BAD_REQUEST') {
+    super(400, code, message);
   }
 }
 

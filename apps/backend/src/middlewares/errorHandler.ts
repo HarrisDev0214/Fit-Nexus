@@ -99,7 +99,7 @@ const pgErrorHandler = (
 
     return res.status(409).json({
       status: 'error',
-      code: 'DUPLICATE_VALUE',
+      code: `${field.toUpperCase()}_EXISTS`,
       message: `${field} already exists`
     });
   }

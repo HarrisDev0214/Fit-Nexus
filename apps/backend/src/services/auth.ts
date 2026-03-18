@@ -36,17 +36,17 @@ export const authService = {
     const user = await userRepository.findByEmail(data.email);
 
     if (!user) {
-      throw new Unauthorized401Error('Email or password is incorrect');
+      throw new Unauthorized401Error('Email or password is incorrect', 'INVALID_CREDENTIALS');
     }
 
     const passwordCheck = await argon2.verify(user.passwordHash, data.password);
 
     if (!passwordCheck) {
-      throw new Unauthorized401Error('Email or password is incorrect');
+      throw new Unauthorized401Error('Email or password is incorrect', 'INVALID_CREDENTIALS');
     }
 
     if (!user.emailVerifiedAt) {
-      throw new BadRequest400Error('請先完成信箱驗證');
+      throw new BadRequest400Error('Email not verified', 'EMAIL_NOT_VERIFIED');
     }
 
     const payload = { userId: user.id, email: user.email };
@@ -66,7 +66,7 @@ export const authService = {
     const passwordCheck = await argon2.verify(user.passwordHash, data.oldPassword);
 
     if (!passwordCheck) {
-      throw new Unauthorized401Error('Old password is incorrect');
+      throw new Unauthorized401Error('Old password is incorrect', 'INVALID_OLD_PASSWORD');
     }
 
     const newPasswordHash = await argon2.hash(data.newPassword);
@@ -106,19 +106,15 @@ export const authService = {
   recreateEmailOtp: async (email: string) => {
     const user = await userRepository.findByEmail(email);
 
-    if (!user) {
-      throw new NotFound404Error('User not found');
-    }
-
-    if (user.emailVerifiedAt) {
-      throw new BadRequest400Error('信箱已驗證');
+    if (!user || user.emailVerifiedAt) {
+      throw new BadRequest400Error('Unable to send verification email', 'OTP_SEND_FAILED');
     }
     const otpRecord = await emailOtpRepository.findByUserId(user.id);
 
     if (otpRecord) {
       const secondsOtpCreated = (Date.now() - otpRecord.createdAt.getTime());
       if (secondsOtpCreated < 60 * 1000) {
-        throw new BadRequest400Error('請稍後再試');
+        throw new BadRequest400Error('Please wait before requesting a new OTP', 'OTP_RATE_LIMITED');
       }
     }
 
@@ -126,32 +122,20 @@ export const authService = {
   },
   verifyEmailOtp: async (data: VerifyEmailOtpInput) => {
     const user = await userRepository.findByEmail(data.email);
-
-    if (!user) {
-      throw new NotFound404Error('User not found');
-    }
-
-    if (user.emailVerifiedAt) {
-      throw new BadRequest400Error('信箱已驗證');
+    if (!user || user.emailVerifiedAt) {
+      throw new BadRequest400Error('Invalid OTP code', 'OTP_INVALID');
     }
 
     const otpRecord = await emailOtpRepository.findByUserId(user.id);
-
-    if (!otpRecord) {
-      throw new NotFound404Error('OTP not found');
+    if (!otpRecord || otpRecord.expiresAt < new Date()) {
+      throw new BadRequest400Error('Invalid OTP code', 'OTP_INVALID');
     }
-
-    if (otpRecord.expiresAt < new Date()) {
-      throw new BadRequest400Error('OTP 已過期');
-    }
-
     if (otpRecord.attempts >= 5) {
-      throw new BadRequest400Error('失敗次數過多，請重新發送驗證碼');
+      throw new BadRequest400Error('Too many failed attempts', 'OTP_MAX_ATTEMPTS');
     }
-
     if (otpRecord.code !== data.otp) {
       await emailOtpRepository.incrementAttempts(user.id);
-      throw new BadRequest400Error('OTP 驗證碼錯誤');
+      throw new BadRequest400Error('Invalid OTP code', 'OTP_INVALID');
     }
 
     await emailOtpRepository.deleteByUserId(user.id);
@@ -175,19 +159,19 @@ export const authService = {
   verifyPasswordResetOtp: async (data: VerifyPasswordResetOtpInput) => {
     const user = await userRepository.findByEmail(data.email);
     if (!user) {
-      throw new BadRequest400Error('驗證碼無效或已過期');
+      throw new BadRequest400Error('Invalid or expired OTP', 'OTP_INVALID');
     }
 
     const otpRecord = await emailOtpRepository.findByUserId(user.id);
-    if (!otpRecord) {
-      throw new BadRequest400Error('驗證碼無效或已過期');
+    if (!otpRecord || otpRecord.expiresAt < new Date()) {
+      throw new BadRequest400Error('Invalid or expired OTP', 'OTP_INVALID');
     }
     if (otpRecord.attempts >= 5) {
-      throw new BadRequest400Error('失敗次數過多，請重新發送驗證碼');
+      throw new BadRequest400Error('Too many failed attempts', 'OTP_MAX_ATTEMPTS');
     }
-    if (otpRecord.code !== data.otp || otpRecord.expiresAt < new Date()) {
+    if (otpRecord.code !== data.otp) {
       await emailOtpRepository.incrementAttempts(user.id);
-      throw new BadRequest400Error('驗證碼無效或已過期');
+      throw new BadRequest400Error('Invalid or expired OTP', 'OTP_INVALID');
     }
 
     await emailOtpRepository.deleteByUserId(user.id);
@@ -203,11 +187,11 @@ export const authService = {
     const tokenHash = hashToken(data.resetToken);
     const tokenRecord = await passwordResetTokenRepository.findByTokenHash(tokenHash);
     if (!tokenRecord) {
-      throw new BadRequest400Error('重設密碼請求無效或已過期，請重新申請');
+      throw new BadRequest400Error('Reset token is invalid or expired, please request a new one', 'RESET_TOKEN_INVALID');
     }
     if (tokenRecord.expiresAt < new Date()) {
       await passwordResetTokenRepository.deleteByUserId(tokenRecord.userId);
-      throw new BadRequest400Error('重設密碼請求無效或已過期，請重新申請');
+      throw new BadRequest400Error('Reset token is invalid or expired, please request a new one', 'RESET_TOKEN_INVALID');
     }
 
     const newPasswordHash = await argon2.hash(data.newPassword);
