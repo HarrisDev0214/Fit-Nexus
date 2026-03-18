@@ -316,9 +316,6 @@ const refreshToken = async (
  *                   example: Email verified successfully
  *       400:
  *         description: |
- *           - `EMAIL_ALREADY_VERIFIED` : Email already verified
- *           - `OTP_NOT_FOUND` : OTP not found
- *           - `OTP_EXPIRED` : OTP has expired
  *           - `OTP_MAX_ATTEMPTS` : Too many failed attempts
  *           - `OTP_INVALID` : Invalid OTP code
  */

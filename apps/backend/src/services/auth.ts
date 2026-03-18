@@ -122,29 +122,17 @@ export const authService = {
   },
   verifyEmailOtp: async (data: VerifyEmailOtpInput) => {
     const user = await userRepository.findByEmail(data.email);
-
-    if (!user) {
+    if (!user || user.emailVerifiedAt) {
       throw new BadRequest400Error('Invalid OTP code', 'OTP_INVALID');
     }
 
-    if (user.emailVerifiedAt) {
-      throw new BadRequest400Error('Email already verified', 'EMAIL_ALREADY_VERIFIED');
-    }
-
     const otpRecord = await emailOtpRepository.findByUserId(user.id);
-
-    if (!otpRecord) {
-      throw new BadRequest400Error('OTP not found', 'OTP_NOT_FOUND');
+    if (!otpRecord || otpRecord.expiresAt < new Date()) {
+      throw new BadRequest400Error('Invalid OTP code', 'OTP_INVALID');
     }
-
-    if (otpRecord.expiresAt < new Date()) {
-      throw new BadRequest400Error('OTP has expired', 'OTP_EXPIRED');
-    }
-
     if (otpRecord.attempts >= 5) {
       throw new BadRequest400Error('Too many failed attempts', 'OTP_MAX_ATTEMPTS');
     }
-
     if (otpRecord.code !== data.otp) {
       await emailOtpRepository.incrementAttempts(user.id);
       throw new BadRequest400Error('Invalid OTP code', 'OTP_INVALID');
@@ -175,13 +163,13 @@ export const authService = {
     }
 
     const otpRecord = await emailOtpRepository.findByUserId(user.id);
-    if (!otpRecord) {
+    if (!otpRecord || otpRecord.expiresAt < new Date()) {
       throw new BadRequest400Error('Invalid or expired OTP', 'OTP_INVALID');
     }
     if (otpRecord.attempts >= 5) {
       throw new BadRequest400Error('Too many failed attempts', 'OTP_MAX_ATTEMPTS');
     }
-    if (otpRecord.code !== data.otp || otpRecord.expiresAt < new Date()) {
+    if (otpRecord.code !== data.otp) {
       await emailOtpRepository.incrementAttempts(user.id);
       throw new BadRequest400Error('Invalid or expired OTP', 'OTP_INVALID');
     }

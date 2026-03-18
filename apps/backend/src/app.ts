@@ -3,7 +3,7 @@ import { jsonErrorHandler, globalErrorHandler } from '@/middlewares/errorHandler
 import { NotFound404Error } from '@/utils/errors';
 import authRouter from '@/routes/auth';
 import swaggerUi from 'swagger-ui-express';
-import swaggerDocs from '@/config/swagger.js';
+import swaggerDocs from '@/config/swagger';
 
 const app = express();
 
