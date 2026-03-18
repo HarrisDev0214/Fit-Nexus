@@ -36,4 +36,4 @@ export const emailConfig = {
 export const swaggerConfig = {
   user: process.env.SWAGGER_USER as string,
   password: process.env.SWAGGER_PASSWORD as string
-};
+} as const;
