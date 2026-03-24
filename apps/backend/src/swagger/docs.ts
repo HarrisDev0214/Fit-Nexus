@@ -1,4 +1,5 @@
 import swaggerJsDoc, { type OAS3Options } from 'swagger-jsdoc';
+import schemas from '@/swagger/schemas';
 
 // Swagger configuration
 const options: OAS3Options = {
@@ -23,7 +24,8 @@ const options: OAS3Options = {
           bearerFormat: 'JWT',
           description: 'Enter your JWT access token obtained from /auth/login endpoint.\n\nExample: `eyJhbGciOiJIUzI1NiIs...`'
         }
-      }
+      },
+      schemas
     }
   },
   apis: ['./src/controllers/*.ts'] // Path to the API routes folders
