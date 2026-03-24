@@ -1,5 +1,6 @@
 export const signupSchema: SwaggerSchema = {
   request: {
+    type: 'object',
     required: ['name', 'email', 'password', 'sex'],
     properties: {
       name: {
@@ -48,6 +49,7 @@ export const signupSchema: SwaggerSchema = {
 
 export const loginSchema: SwaggerSchema = {
   request: {
+    type: 'object',
     required: ['email', 'password'],
     properties: {
       email: {
@@ -99,6 +101,7 @@ export const logoutSchema: SwaggerSchema = {
 
 export const updatePasswordSchema: SwaggerSchema = {
   request: {
+    type: 'object',
     required: ['oldPassword', 'newPassword'],
     properties: {
       oldPassword: {
@@ -145,6 +148,7 @@ export const refreshTokenSchema: SwaggerSchema = {
 
 export const verifyEmailOtpSchema: SwaggerSchema = {
   request: {
+    type: 'object',
     required: ['email', 'otp'],
     properties: {
       email: {
@@ -176,6 +180,7 @@ export const verifyEmailOtpSchema: SwaggerSchema = {
 
 export const recreateEmailOtpSchema: SwaggerSchema = {
   request: {
+    type: 'object',
     required: ['email'],
     properties: {
       email: {
@@ -202,6 +207,7 @@ export const recreateEmailOtpSchema: SwaggerSchema = {
 
 export const createPasswordResetOtpSchema: SwaggerSchema = {
   request: {
+    type: 'object',
     required: ['email'],
     properties: {
       email: {
@@ -228,6 +234,7 @@ export const createPasswordResetOtpSchema: SwaggerSchema = {
 
 export const verifyPasswordResetOtpSchema: SwaggerSchema = {
   request: {
+    type: 'object',
     required: ['email', 'otp'],
     properties: {
       email: {
@@ -265,6 +272,7 @@ export const verifyPasswordResetOtpSchema: SwaggerSchema = {
 
 export const resetPasswordSchema: SwaggerSchema = {
   request: {
+    type: 'object',
     required: ['resetToken', 'newPassword', 'confirmNewPassword'],
     properties: {
       resetToken: {

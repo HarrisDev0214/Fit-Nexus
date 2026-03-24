@@ -7,7 +7,10 @@ const requiredEnvVars = [
   'JWT_ACCESS_EXPIRES_IN',
   'JWT_REFRESH_EXPIRES_IN',
   'RESEND_API_KEY',
-  'RESEND_FROM_EMAIL',
+  'RESEND_FROM_EMAIL'
+] as const;
+
+const devOnlyEnvVars = [
   'SWAGGER_USER',
   'SWAGGER_PASSWORD'
 ] as const;
@@ -18,6 +21,15 @@ if (missingVars.length > 0) {
   throw new Error(
     `Missing required environment variables: ${missingVars.join(', ')}`
   );
+}
+
+if (process.env.NODE_ENV === 'development') {
+  const missingDevVars = devOnlyEnvVars.filter((key) => !process.env[key]);
+  if (missingDevVars.length > 0) {
+    throw new Error(
+      `Missing development environment variables: ${missingDevVars.join(', ')}`
+    );
+  }
 }
 
 export const jwtConfig = {
@@ -34,6 +46,6 @@ export const emailConfig = {
 } as const;
 
 export const swaggerConfig = {
-  user: process.env.SWAGGER_USER as string,
-  password: process.env.SWAGGER_PASSWORD as string
+  user: process.env.SWAGGER_USER ?? '',
+  password: process.env.SWAGGER_PASSWORD ?? ''
 } as const;
