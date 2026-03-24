@@ -3,10 +3,12 @@ import { jsonErrorHandler, globalErrorHandler } from '@/middlewares/errorHandler
 import { NotFound404Error } from '@/utils/errors';
 import authRouter from '@/routes/auth';
 import setupSwagger from '@/middlewares/swagger';
+import { generalLimiter } from '@/middlewares/rateLimit';
 
 const app = express();
 
 setupSwagger(app);
+app.use(generalLimiter);
 app.use(express.json());
 app.use(jsonErrorHandler);
 
