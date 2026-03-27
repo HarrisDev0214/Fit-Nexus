@@ -3,10 +3,16 @@ import { jsonErrorHandler, globalErrorHandler } from '@/middlewares/errorHandler
 import { NotFound404Error } from '@/utils/errors';
 import authRouter from '@/routes/auth';
 import setupSwagger from '@/middlewares/swagger';
+import corsMiddleware from '@/middlewares/cors';
+import helmetMiddleware from '@/middlewares/helmet';
+import { generalLimiter } from '@/middlewares/rateLimit';
 
 const app = express();
 
+helmetMiddleware(app);
 setupSwagger(app);
+corsMiddleware(app);
+app.use(generalLimiter);
 app.use(express.json());
 app.use(jsonErrorHandler);
 

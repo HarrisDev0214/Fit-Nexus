@@ -70,7 +70,7 @@ export const globalErrorHandler = (
     return res.status(500).json({
       status: 'error',
       code: 'INTERNAL_SERVER_ERROR',
-      message: process.env.NODE_ENV === 'developlment'
+      message: process.env.NODE_ENV === 'development'
         ? err.message
         : 'An unexpected error occurred',
       ...(process.env.NODE_ENV === 'development' && {

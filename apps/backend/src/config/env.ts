@@ -1,6 +1,7 @@
 import type { StringValue } from 'ms';
 
 const requiredEnvVars = [
+  'CORS_ORIGINS',
   'JWT_ACCESS_SECRET',
   'JWT_REFRESH_SECRET',
   'JWT_ISS',
