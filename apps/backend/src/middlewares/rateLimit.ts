@@ -6,23 +6,27 @@ const rateLimitMessage = {
   message: 'Too many requests, please try again later'
 };
 
-export const generalLimiter = rateLimit({
-  windowMs: 10 * 60 * 1000,
-  limit: 100,
+const baseOptions = {
   standardHeaders: true,
   legacyHeaders: false,
   ipv6Subnet: 56,
   message: rateLimitMessage
+};
+
+export const generalLimiter = rateLimit({
+  ...baseOptions,
+  windowMs: 10 * 60 * 1000,
+  limit: 100
 });
 
 export const authLimiter = rateLimit({
+  ...baseOptions,
   windowMs: 5 * 60 * 1000,
-  limit: 5,
-  message: rateLimitMessage
+  limit: 5
 });
 
 export const otpLimiter = rateLimit({
+  ...baseOptions,
   windowMs: 60 * 1000,
-  limit: 3,
-  message: rateLimitMessage
+  limit: 3
 });

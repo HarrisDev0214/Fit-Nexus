@@ -3,7 +3,8 @@ import type { Express } from 'express';
 
 const allowedOrigins = process.env.CORS_ORIGINS
   ?.split(',')
-  .map(origin => origin.trim());
+  .map(origin => origin.trim())
+  .filter(origin => origin.length > 0);
 
 const corsOptions: cors.CorsOptions = {
   origin: allowedOrigins,
