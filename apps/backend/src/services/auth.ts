@@ -20,10 +20,22 @@ import {
 import { emailService } from '@/services/email';
 import { passwordResetTokenRepository } from '@/repositories/passwordResetToken';
 
-export const authService = {
-  signUp: async (data: SignupInput) => {
+type UserRepository = typeof userRepository;
+type EmailOtpRepository = typeof emailOtpRepository;
+type EmailService = typeof emailService;
+type PasswordResetTokenRepository = typeof passwordResetTokenRepository;
+
+class AuthService {
+  constructor(
+    private userRepository: UserRepository,
+    private emailOtpRepository: EmailOtpRepository,
+    private emailService: EmailService,
+    private passwordResetTokenRepository: PasswordResetTokenRepository
+  ) {}
+
+  async signUp(data: SignupInput) {
     const passwordHash = await argon2.hash(data.password);
-    const newUser = await userRepository.create({
+    const newUser = await this.userRepository.create({
       name: data.name,
       email: data.email,
       passwordHash,
@@ -31,22 +43,20 @@ export const authService = {
     });
 
     return newUser;
-  },
-  login: async (data: LoginInput) => {
-    const user = await userRepository.findByEmail(data.email);
+  }
 
+  async login(data: LoginInput) {
+    const user = await this.userRepository.findByEmail(data.email);
     if (!user) {
       throw new Unauthorized401Error('Email or password is incorrect', 'INVALID_CREDENTIALS');
     }
-
-    const passwordCheck = await argon2.verify(user.passwordHash, data.password);
-
-    if (!passwordCheck) {
-      throw new Unauthorized401Error('Email or password is incorrect', 'INVALID_CREDENTIALS');
-    }
-
     if (!user.emailVerifiedAt) {
       throw new BadRequest400Error('Email not verified', 'EMAIL_NOT_VERIFIED');
+    }
+
+    const passwordCheck = await argon2.verify(user.passwordHash, data.password);
+    if (!passwordCheck) {
+      throw new Unauthorized401Error('Email or password is incorrect', 'INVALID_CREDENTIALS');
     }
 
     const payload = { userId: user.id, email: user.email };
@@ -55,62 +65,62 @@ export const authService = {
       accessToken: generateAccessToken(payload),
       refreshToken: generateRefreshToken(payload)
     };
-  },
-  updatePassword: async (data: UpdatePasswordInput & { userId: string }) => {
-    const user = await userRepository.findById(data.userId);
+  }
 
+  async updatePassword(data: UpdatePasswordInput & { userId: string }) {
+    const user = await this.userRepository.findById(data.userId);
     if (!user) {
       throw new NotFound404Error('User not found');
     }
 
     const passwordCheck = await argon2.verify(user.passwordHash, data.oldPassword);
-
     if (!passwordCheck) {
       throw new Unauthorized401Error('Old password is incorrect', 'INVALID_OLD_PASSWORD');
     }
 
     const newPasswordHash = await argon2.hash(data.newPassword);
-    await userRepository.updatePassword(data.userId, newPasswordHash);
-  },
-  refreshToken: async (data: UserJwtData) => {
-    const user = await userRepository.findById(data.userId);
+    await this.userRepository.updatePassword(data.userId, newPasswordHash);
+  }
 
+  async refreshToken(data: UserJwtData) {
+    const user = await this.userRepository.findById(data.userId);
     if (!user) {
       throw new NotFound404Error('User not found');
     }
 
     return generateAccessToken({ userId: data.userId, email: data.email });
-  },
-  createEmailOtp: async (
+  }
+
+  async createEmailOtp(
     emailType: 'emailVerification' | 'passwordReset',
     userId: string,
     email: string
-  ) => {
+  ) {
     const otp = randomInt(100000, 1000000).toString();
-    await emailOtpRepository.upsert(userId, otp);
+    await this.emailOtpRepository.upsert(userId, otp);
 
     try {
       switch (emailType) {
         case 'emailVerification':
-          await emailService.sendEmailVerificationOtp(email, otp);
+          await this.emailService.sendEmailVerificationOtp(email, otp);
           break;
         case 'passwordReset':
-          await emailService.sendPasswordResetOtp(email, otp);
+          await this.emailService.sendPasswordResetOtp(email, otp);
           break;
       }
     } catch (err) {
-      await emailOtpRepository.deleteByUserId(userId);
+      await this.emailOtpRepository.deleteByUserId(userId);
       throw err;
     }
-  },
-  recreateEmailOtp: async (email: string) => {
-    const user = await userRepository.findByEmail(email);
+  }
 
+  async recreateEmailOtp(email: string) {
+    const user = await this.userRepository.findByEmail(email);
     if (!user || user.emailVerifiedAt) {
       throw new BadRequest400Error('Unable to send verification email', 'OTP_SEND_FAILED');
     }
-    const otpRecord = await emailOtpRepository.findByUserId(user.id);
 
+    const otpRecord = await this.emailOtpRepository.findByUserId(user.id);
     if (otpRecord) {
       const secondsOtpCreated = (Date.now() - otpRecord.createdAt.getTime());
       if (secondsOtpCreated < 60 * 1000) {
@@ -118,15 +128,16 @@ export const authService = {
       }
     }
 
-    await authService.createEmailOtp('emailVerification', user.id, email);
-  },
-  verifyEmailOtp: async (data: VerifyEmailOtpInput) => {
-    const user = await userRepository.findByEmail(data.email);
+    await this.createEmailOtp('emailVerification', user.id, email);
+  }
+
+  async verifyEmailOtp(data: VerifyEmailOtpInput) {
+    const user = await this.userRepository.findByEmail(data.email);
     if (!user || user.emailVerifiedAt) {
       throw new BadRequest400Error('Invalid OTP code', 'OTP_INVALID');
     }
 
-    const otpRecord = await emailOtpRepository.findByUserId(user.id);
+    const otpRecord = await this.emailOtpRepository.findByUserId(user.id);
     if (!otpRecord || otpRecord.expiresAt < new Date()) {
       throw new BadRequest400Error('Invalid OTP code', 'OTP_INVALID');
     }
@@ -134,18 +145,19 @@ export const authService = {
       throw new BadRequest400Error('Too many failed attempts', 'OTP_MAX_ATTEMPTS');
     }
     if (otpRecord.code !== data.otp) {
-      await emailOtpRepository.incrementAttempts(user.id);
+      await this.emailOtpRepository.incrementAttempts(user.id);
       throw new BadRequest400Error('Invalid OTP code', 'OTP_INVALID');
     }
 
-    await emailOtpRepository.deleteByUserId(user.id);
-    await userRepository.markEmailAsVerified(user.id);
-  },
-  createPasswordOtp: async (email: string) => {
-    const user = await userRepository.findByEmail(email);
+    await this.emailOtpRepository.deleteByUserId(user.id);
+    await this.userRepository.markEmailAsVerified(user.id);
+  }
+
+  async createPasswordOtp(email: string) {
+    const user = await this.userRepository.findByEmail(email);
 
     if (user) {
-      const otpRecord = await emailOtpRepository.findByUserId(user.id);
+      const otpRecord = await this.emailOtpRepository.findByUserId(user.id);
 
       if (otpRecord) {
         const secondsOtpCreated = (Date.now() - otpRecord.createdAt.getTime());
@@ -153,16 +165,17 @@ export const authService = {
           return;
         }
       }
-      await authService.createEmailOtp('passwordReset', user.id, email);
+      await this.createEmailOtp('passwordReset', user.id, email);
     }
-  },
-  verifyPasswordResetOtp: async (data: VerifyPasswordResetOtpInput) => {
-    const user = await userRepository.findByEmail(data.email);
+  }
+
+  async verifyPasswordResetOtp(data: VerifyPasswordResetOtpInput) {
+    const user = await this.userRepository.findByEmail(data.email);
     if (!user) {
       throw new BadRequest400Error('Invalid or expired OTP', 'OTP_INVALID');
     }
 
-    const otpRecord = await emailOtpRepository.findByUserId(user.id);
+    const otpRecord = await this.emailOtpRepository.findByUserId(user.id);
     if (!otpRecord || otpRecord.expiresAt < new Date()) {
       throw new BadRequest400Error('Invalid or expired OTP', 'OTP_INVALID');
     }
@@ -170,38 +183,46 @@ export const authService = {
       throw new BadRequest400Error('Too many failed attempts', 'OTP_MAX_ATTEMPTS');
     }
     if (otpRecord.code !== data.otp) {
-      await emailOtpRepository.incrementAttempts(user.id);
+      await this.emailOtpRepository.incrementAttempts(user.id);
       throw new BadRequest400Error('Invalid or expired OTP', 'OTP_INVALID');
     }
 
-    await emailOtpRepository.deleteByUserId(user.id);
-    await passwordResetTokenRepository.deleteByUserId(user.id);
+    await this.emailOtpRepository.deleteByUserId(user.id);
+    await this.passwordResetTokenRepository.deleteByUserId(user.id);
 
     const token = randomBytes(32).toString('hex');
     const tokenHash = hashToken(token);
-    await passwordResetTokenRepository.create(tokenHash, user.id, data.email);
+    await this.passwordResetTokenRepository.create(tokenHash, user.id, data.email);
 
     return token;
-  },
-  resetPassword: async (data: ResetPasswordInput) => {
+  }
+
+  async resetPassword(data: ResetPasswordInput) {
     const tokenHash = hashToken(data.resetToken);
-    const tokenRecord = await passwordResetTokenRepository.findByTokenHash(tokenHash);
+    const tokenRecord = await this.passwordResetTokenRepository.findByTokenHash(tokenHash);
     if (!tokenRecord) {
       throw new BadRequest400Error('Reset token is invalid or expired, please request a new one', 'RESET_TOKEN_INVALID');
     }
     if (tokenRecord.expiresAt < new Date()) {
-      await passwordResetTokenRepository.deleteByUserId(tokenRecord.userId);
+      await this.passwordResetTokenRepository.deleteByUserId(tokenRecord.userId);
       throw new BadRequest400Error('Reset token is invalid or expired, please request a new one', 'RESET_TOKEN_INVALID');
     }
 
     const newPasswordHash = await argon2.hash(data.newPassword);
-    await userRepository.updatePassword(tokenRecord.userId, newPasswordHash);
-    await passwordResetTokenRepository.deleteByUserId(tokenRecord.userId);
+    await this.userRepository.updatePassword(tokenRecord.userId, newPasswordHash);
+    await this.passwordResetTokenRepository.deleteByUserId(tokenRecord.userId);
 
     try {
-      await emailService.sendPasswordChanged(tokenRecord.email);
+      await this.emailService.sendPasswordChanged(tokenRecord.email);
     } catch {
       // Email notification failure should not affect password reset success
     }
   }
-};
+}
+
+export const authService = new AuthService(
+  userRepository,
+  emailOtpRepository,
+  emailService,
+  passwordResetTokenRepository
+);
