@@ -1,11 +1,14 @@
 import { Resend } from 'resend';
 import { emailConfig } from '@/config/env';
 
-const resend = new Resend(emailConfig.resendApiKey);
+class EmailService {
+  constructor(private resend: Resend){}
 
-export const emailService = {
-  sendEmailVerificationOtp: async (to: string, otp: string) => {
-    const result = await resend.emails.send({
+  async sendEmailVerificationOtp(
+    to: string,
+    otp: string
+  ) {
+    const result = await this.resend.emails.send({
       from: emailConfig.fromEmail,
       to,
       subject: 'Fit-Nexus 信箱驗證',
@@ -14,9 +17,13 @@ export const emailService = {
     if (result.error) {
       throw new Error(`Email send failed: ${result.error.message}`);
     }
-  },
-  sendPasswordResetOtp: async (to: string, otp: string) => {
-    const result = await resend.emails.send({
+  }
+
+  async sendPasswordResetOtp(
+    to: string,
+    otp: string
+  ) {
+    const result = await this.resend.emails.send({
       from: emailConfig.fromEmail,
       to,
       subject: 'Fit-Nexus 密碼重置',
@@ -25,9 +32,10 @@ export const emailService = {
     if (result.error) {
       throw new Error(`Email send failed: ${result.error.message}`);
     }
-  },
-  sendPasswordChanged: async (to: string) => {
-    const result = await resend.emails.send({
+  }
+
+  async sendPasswordChanged(to: string) {
+    const result = await this.resend.emails.send({
       from: emailConfig.fromEmail,
       to,
       subject: 'Fit-Nexus 密碼變更成功',
@@ -37,4 +45,6 @@ export const emailService = {
       throw new Error(`Email send failed: ${result.error.message}`);
     }
   }
-};
+}
+
+export const emailService = new EmailService(new Resend(emailConfig.resendApiKey));
