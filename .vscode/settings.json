@@ -6,9 +6,7 @@
     "strings": "on"
   },
   "tailwindCSS.classAttributes": ["class", "ui"],
-  "tailwindCSS.experimental.classRegex": [
-    ["ui:\\s*{([^)]*)\\s*}", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
-  ],
+  "tailwindCSS.classFunctions": ["defineAppConfig"],
   "files.exclude": {
     "**/*.turbo": true,
     "**/node_modules": true
