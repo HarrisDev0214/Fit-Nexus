@@ -7,7 +7,15 @@ import ui from '@nuxt/ui/vite';
 export default defineConfig({
   plugins: [
     vue(),
-    ui()
+    ui({
+      ui: {
+        colors: {
+          primary: 'yellow',
+          secondary: 'zinc',
+          neutral: 'neutral'
+        }
+      }
+    })
   ],
   resolve: {
     alias: {
